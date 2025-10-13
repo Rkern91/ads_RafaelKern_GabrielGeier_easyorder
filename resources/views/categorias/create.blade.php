@@ -1,23 +1,33 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">Nova categoria</h2>
+        <h2 class="font-semibold text-xl text-white leading-tight" style="text-align: center;">
+            Nova categoria
+        </h2>
     </x-slot>
 
-    <div class="py-6">
-        <div class="max-w-2xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg p-6">
-                <form method="post" action="{{ route('categorias.store') }}" class="space-y-4">
-                    @csrf
-                    <div>
-                        <label class="block mb-1 text-sm">Nome</label>
-                        <input name="nm_categoria" value="{{ old('nm_categoria') }}" class="w-full rounded border-gray-300 dark:bg-gray-900 dark:text-gray-100">
-                        @error('nm_categoria') <div class="text-sm text-red-600 mt-1">{{ $message }}</div> @enderror
-                    </div>
-                    <div class="flex gap-2">
-                        <a href="{{ route('categorias.index') }}" class="px-4 py-2 rounded bg-gray-200 dark:bg-gray-700">Cancelar</a>
-                        <button class="px-4 py-2 rounded bg-gray-800 text-white">Salvar</button>
-                    </div>
-                </form>
+    <div class="py-10">
+        <div class="max-w-3xl mx-auto sm:px-6 lg:px-8">
+            <div class="flex justify-center">
+                <div class="inline-block text-white border border-white/20 rounded-lg p-6" style="background-color:#0f0f0f; width:100%; max-width:600px;">
+                    <form method="post" action="{{ route('categorias.store') }}" class="space-y-6">
+                        @csrf
+                        <div>
+                            <label for="nm_categoria" class="block text-sm mb-2 text-white">Nome da categoria</label>
+                            <input id="nm_categoria" name="nm_categoria" style="color: black;" value="{{ old('nm_categoria') }}" placeholder="Ex: Bebidas, Comidas, Sobremesas..." class="w-full rounded bg-black text-white placeholder-gray-400 border border-white/20 focus:border-white/40 focus:ring-0 p-2.5">
+                            @error('nm_categoria')
+                            <div class="text-sm text-red-400 mt-1">{{ $message }}</div>
+                            @enderror
+                        </div>
+                        <div class="flex justify-center gap-4 pt-6">
+                            <a href="{{ route('categorias.index') }}" class="px-5 py-2 rounded bg-white text-black hover:opacity-90 transition" style="background-color: gray; color:white;">
+                                Voltar
+                            </a>
+                            <button type="submit" class="px-5 py-2 rounded bg-green-600 text-white hover:opacity-90 transition" style="background-color:white; color:black;">
+                                Salvar
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
