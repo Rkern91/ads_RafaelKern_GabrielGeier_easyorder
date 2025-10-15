@@ -11,9 +11,60 @@
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script>
+          document.addEventListener('DOMContentLoaded', function () {
+              @if(session('success'))
+              Swal.fire({
+                icon: 'success',
+                title: 'Sucesso',
+                text: {!! json_encode(session('success')) !!},
+                timer: 2500,
+                showConfirmButton: false
+              });
+              @endif
+
+              @if(session('error'))
+              Swal.fire({
+                icon: 'error',
+                title: 'Erro',
+                text: {!! json_encode(session('error')) !!},
+                confirmButtonText: 'Ok',
+                confirmButtonColor: '#d63030',
+                showConfirmButton: true
+              });
+              @endif
+          });
+
+          document.addEventListener('click', function(e){
+            // botão que tenha data-confirm attribute
+            const btn = e.target.closest('[data-confirm]');
+            if (!btn) return;
+
+            e.preventDefault();
+            const form = btn.closest('form');
+            const message = btn.getAttribute('data-confirm') || 'Deseja confirmar?';
+
+            Swal.fire({
+              title: 'Atenção',
+              text: message,
+              icon: 'question',
+              showCancelButton: true,
+              confirmButtonText: 'Sim',
+              confirmButtonColor: '#d63030',
+              cancelButtonText: 'Cancelar',
+              cancelButtonColor: '#5ad630',
+              allowOutsideClick: false,
+              allowEscapeKey: false,
+              allowEnterKey: false,
+            }).then((result) => {
+              if (result.isConfirmed)
+                form.submit();
+            });
+          });
+        </script>
     </head>
     <body class="font-sans antialiased" style="background-color: black;">
         <div class="fixed inset-0 z-0 pointer-events-none"

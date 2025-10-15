@@ -5,20 +5,6 @@
 
     <div class="py-10">
         <div class="max-w-3xl mx-auto sm:px-6 lg:px-8">
-            @if(session('success'))
-                <div class="flex justify-center mb-6">
-                    <div class="px-4 py-2 rounded text-green-400 border border-green-600" style="background-color:#000; display:inline-block; text-align:center; color: green; font-weight: bold">
-                        {{ session('success') }}
-                    </div>
-                </div>
-            @endif
-                @if(session('error'))
-                    <div class="flex justify-center mb-6">
-                        <div class="px-4 py-2 rounded text-red-400 border border-red-600" style="background-color:#000; display:inline-block; text-align:center; color: red; font-weight: bold;">
-                            {{ session('error') }}
-                        </div>
-                    </div>
-                @endif
 
             <div class="flex justify-center">
                 <div class="inline-block text-white border border-white/20 rounded-lg p-6" style="background-color:#0f0f0f; width:100%; max-width:720px;">

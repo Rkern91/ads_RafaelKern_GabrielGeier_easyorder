@@ -5,21 +5,6 @@
 
     <div class="py-10">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            @if(session('success'))
-                <div class="flex justify-center mb-6">
-                    <div class="px-4 py-2 rounded text-green-400 border border-green-600" style="background-color:#000; display:inline-block; text-align:center; color: green; font-weight: bold;">
-                        {{ session('success') }}
-                    </div>
-                </div>
-            @endif
-            @if(session('error'))
-                <div class="flex justify-center mb-6">
-                    <div class="px-4 py-2 rounded text-red-400 border border-red-600" style="background-color:#000; display:inline-block; text-align:center; color: red; font-weight: bold;">
-                        {{ session('error') }}
-                    </div>
-                </div>
-            @endif
-
             <div class="flex justify-center">
                 <div class="inline-block bg-black text-white border border-white/20 rounded-lg p-5" style="background-color:#0f0f0f; padding:20px;">
                     <form method="get" class="mb-4" style="margin:20px; text-align:center;">
@@ -60,7 +45,7 @@
                                             <a href="{{ route('usuarios.edit', $u) }}" class="px-3 py-1 rounded hover:opacity-90" style="background:#fff;color:#000;margin-right:10px;">Editar</a>
                                             <form method="post" action="{{ route('usuarios.destroy', $u) }}" class="inline">
                                                 @csrf @method('DELETE')
-                                                <button class="px-3 py-1 rounded bg-red-600 text-white hover:opacity-90" onclick="return confirm('Excluir este usuário?')">Excluir</button>
+                                                <button data-confirm="Deseja remover este Usuário?" class="px-3 py-1 rounded bg-red-600 text-white hover:opacity-90">Excluir</button>
                                             </form>
                                         </div>
                                     </td>

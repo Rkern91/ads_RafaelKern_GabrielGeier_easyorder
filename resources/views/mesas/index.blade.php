@@ -5,20 +5,6 @@
 
     <div class="py-10">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            @if(session('success'))
-                <div class="flex justify-center mb-6">
-                    <div class="px-4 py-2 rounded text-green-400 border border-green-600" style="background-color:#000; color: green; font-weight: bold; display:inline-block; text-align:center;">
-                        {{ session('success') }}
-                    </div>
-                </div>
-            @endif
-            @if(session('error'))
-                <div class="flex justify-center mb-6">
-                    <div class="px-4 py-2 rounded text-red-400 border border-red-600" style="background-color:#000; display:inline-block; text-align:center; color: red; font-weight: bold;">
-                        {{ session('error') }}
-                    </div>
-                </div>
-            @endif
 
             <div class="flex justify-center">
                 <div class="inline-block bg-black text-white border border-white/20 rounded-lg p-5" style="background-color:#0f0f0f; padding:20px;">
@@ -49,7 +35,9 @@
                                             <form action="{{ route('mesas.destroy', $mesa) }}" method="post" class="inline">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button class="px-3 py-1 rounded bg-red-600 text-white hover:opacity-90" onclick="return confirm('Excluir esta mesa?')">Excluir</button>
+                                                <button type="button" data-confirm="Deseja remover esta Mesa?" class="px-3 py-1 rounded bg-red-600 text-white">
+                                                    Excluir
+                                                </button>
                                             </form>
                                         </div>
                                     </td>
