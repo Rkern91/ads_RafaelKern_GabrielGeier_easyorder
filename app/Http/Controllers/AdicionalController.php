@@ -56,12 +56,16 @@ class AdicionalController extends Controller
     return redirect()->route('adicionais.index')->with('success', 'Adicional atualizado.');
   }
 
-  public function destroy(Adicional $adicionai)
+  public function destroy(Adicional $adicional)
   {
-    try {
-      $adicionai->delete();
+    try
+    {
+      $adicional->delete();
+      
       return redirect()->route('adicionais.index')->with('success', 'Adicional excluído.');
-    } catch (QueryException $e) {
+    }
+    catch (QueryException $e)
+    {
       return redirect()->route('adicionais.index')->with('error', 'Não é possível excluir: adicional vinculado a pedidos.');
     }
   }
