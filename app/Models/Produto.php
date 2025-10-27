@@ -10,6 +10,7 @@ class Produto extends Model
   protected $primaryKey = 'cd_produto';
   public    $timestamps = false;
   protected $fillable   = ['cd_categoria','nm_produto','vl_valor','ds_produto','cd_usuario_cadastro'];
+  protected $hidden     = ['img_b64'];
 
   public function categoria()
   {

@@ -4,19 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Models\Adicional;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 use Illuminate\Database\QueryException;
 
 class AdicionalController extends Controller
 {
   public function index(Request $request)
   {
-    $q = trim($request->get('q', ''));
-    $adicionais = Adicional::when($q, fn($s) => $s->where('nm_adicional', 'ilike', "%$q%"))
-      ->orderBy('nm_adicional')
-      ->paginate(10)
-      ->withQueryString();
-
+    $q          = trim($request->get('q',''));
+    $adicionais = Adicional::when($q, fn($s)=>$s->where('nm_adicional','ilike',"%$q%"))->orderBy('nm_adicional')->paginate(10)->withQueryString();
     return view('adicionais.index', compact('adicionais','q'));
   }
 
@@ -27,46 +22,80 @@ class AdicionalController extends Controller
 
   public function store(Request $request)
   {
-    $data = $request->validate([
-      'nm_adicional' => ['required','max:50','unique:adicional,nm_adicional'],
+    $validated = $request->validate([
+      'nm_adicional' => ['required','string','max:50'],
       'vl_adicional' => ['required','numeric','min:0'],
-      'ds_adicional' => ['nullable','max:255'],
+      'ds_adicional' => ['nullable','string','max:255'],
+      'imagem'       => ['nullable','image','max:4096'],
     ]);
 
-    Adicional::create($data);
+    unset($validated['imagem']);
 
-    return redirect()->route('adicionais.index')->with('success', 'Adicional criado.');
+    $a = new Adicional($validated);
+
+    if ($request->hasFile('imagem')) {
+      $f = $request->file('imagem');
+      $bin = file_get_contents($f->getRealPath());
+      $a->img_b64  = base64_encode($bin);
+      $a->img_mime = $f->getMimeType();
+    }
+
+    $a->save();
+
+    return redirect()->route('adicionais.index')->with('success','Adicional criado.');
   }
 
-  public function edit(Adicional $adicionai)
+  public function edit(Adicional $adicional)
   {
-    return view('adicionais.edit', ['adicional' => $adicionai]);
+    return view('adicionais.edit', compact('adicional'));
   }
 
-  public function update(Request $request, Adicional $adicionai)
+  public function update(Request $request, Adicional $adicional)
   {
-    $data = $request->validate([
-      'nm_adicional' => ['required','max:50', Rule::unique('adicional','nm_adicional')->ignore($adicionai->cd_adicional,'cd_adicional')],
-      'vl_adicional' => ['required','numeric','min:0'],
-      'ds_adicional' => ['nullable','max:255'],
+    $validated = $request->validate([
+      'nm_adicional'  => ['required','string','max:50'],
+      'vl_adicional'  => ['required','numeric','min:0'],
+      'ds_adicional'  => ['nullable','string','max:255'],
+      'imagem'        => ['nullable','image','max:4096'],
+      'remover_imagem'=> ['nullable','boolean'],
     ]);
 
-    $adicionai->update($data);
+    $remover = (bool)($validated['remover_imagem'] ?? false);
+    unset($validated['imagem'],$validated['remover_imagem']);
 
-    return redirect()->route('adicionais.index')->with('success', 'Adicional atualizado.');
+    $adicional->fill($validated);
+
+    if ($remover) {
+      $adicional->img_b64 = null;
+      $adicional->img_mime = null;
+    } elseif ($request->hasFile('imagem')) {
+      $f = $request->file('imagem');
+      $bin = file_get_contents($f->getRealPath());
+      $adicional->img_b64  = base64_encode($bin);
+      $adicional->img_mime = $f->getMimeType();
+    }
+
+    $adicional->save();
+
+    return redirect()->route('adicionais.index')->with('success','Adicional atualizado.');
   }
 
   public function destroy(Adicional $adicional)
   {
-    try
-    {
+    try {
       $adicional->delete();
-      
-      return redirect()->route('adicionais.index')->with('success', 'Adicional excluído.');
+      return redirect()->route('adicionais.index')->with('success','Adicional excluído.');
+    } catch (QueryException $e) {
+      return redirect()->route('adicionais.index')->with('error','Não é possível excluir.');
     }
-    catch (QueryException $e)
-    {
-      return redirect()->route('adicionais.index')->with('error', 'Não é possível excluir: adicional vinculado a pedidos.');
-    }
+  }
+
+  public function imagem(Adicional $adicional)
+  {
+    abort_unless($adicional->img_b64, 404);
+    $bytes = base64_decode($adicional->img_b64, true);
+    abort_unless($bytes !== false, 404);
+
+    return response($bytes)->header('Content-Type', $adicional->img_mime ?: 'image/png')->header('Content-Length', strlen($bytes))->header('Cache-Control', 'public, max-age=86400');
   }
 }

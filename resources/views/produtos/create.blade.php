@@ -7,7 +7,7 @@
         <div class="max-w-3xl mx-auto sm:px-6 lg:px-8">
             <div class="flex justify-center">
                 <div class="inline-block text-white border border-white/20 rounded-lg p-6" style="background-color:#0f0f0f; width:100%; max-width:640px;">
-                    <form id="formCreateProduto" method="post" action="{{ route('produtos.store') }}" class="space-y-6">
+                    <form id="formCreateProduto" method="post" action="{{ route('produtos.store') }}" class="space-y-6" enctype="multipart/form-data">
                         @csrf
 
                         <div>
@@ -37,6 +37,12 @@
                             <label for="ds_produto" class="block text-sm mb-2 text-white">Descrição</label>
                             <input id="ds_produto" name="ds_produto" style="color: black;" value="{{ old('ds_produto') }}" class="w-full rounded bg-black text-white placeholder-gray-400 border border-white/20 focus:border-white/40 focus:ring-0 p-2.5">
                             @error('ds_produto') <div class="text-sm text-red-400 mt-1">{{ $message }}</div> @enderror
+                        </div>
+
+                        <div>
+                            <label class="block text-sm mb-2 text-white">Imagem</label>
+                            <input type="file" name="imagem" accept="image/*" class="w-full rounded bg-black text-white file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:bg-white file:text-black file:hover:opacity-90 border border-white/20 focus:border-white/40 focus:ring-0 p-2">
+                            @error('imagem') <div class="text-sm text-red-400 mt-1">{{ $message }}</div> @enderror
                         </div>
                     </form>
 
