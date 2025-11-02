@@ -104,9 +104,8 @@
                             </div>
 
                             <div class="mt-6 flex justify-center gap-3">
-                                <a href="{{ route('cardapio.index', ['mesa'=>$cart['mesa'], 'restore'=>1]) }}"
-                                   class="px-6 py-2 rounded bg-gray-500 text-black hover:opacity-90 transition" style="color:white;">
-                                    Voltar
+                                <a href="{{ route('cardapio.index', ['mesa'=>$cart['mesa'], 'restore'=>1]) }}" class="px-6 py-2 rounded bg-gray-500 text-black hover:opacity-90 transition" style="color:white;">
+                                    Alterar
                                 </a>
                                 <form method="post" action="{{ route('pedido.finalizar') }}">
                                     @csrf

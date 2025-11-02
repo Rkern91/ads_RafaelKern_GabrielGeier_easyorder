@@ -5,12 +5,63 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Cardápio</title>
     @vite('resources/css/app.css')
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+          @if(session('success'))
+          Swal.fire({
+            icon: 'success',
+            title: 'Sucesso',
+            text: {!! json_encode(session('success')) !!},
+            timer: 2500,
+            showConfirmButton: false
+          });
+          @endif
+
+          @if(session('error'))
+          Swal.fire({
+            icon: 'error',
+            title: 'Erro',
+            text: {!! json_encode(session('error')) !!},
+            confirmButtonText: 'Ok',
+            confirmButtonColor: '#d63030',
+            showConfirmButton: true
+          });
+          @endif
+      });
+
+      document.addEventListener('click', function(e){
+        // botão que tenha data-confirm attribute
+        const btn = e.target.closest('[data-confirm]');
+        if (!btn) return;
+
+        e.preventDefault();
+        const form = btn.closest('form');
+        const message = btn.getAttribute('data-confirm') || 'Deseja confirmar?';
+
+        Swal.fire({
+          title: 'Atenção',
+          text: message,
+          icon: 'question',
+          showCancelButton: true,
+          confirmButtonText: 'Sim',
+          confirmButtonColor: '#d63030',
+          cancelButtonText: 'Cancelar',
+          cancelButtonColor: '#5ad630',
+          allowOutsideClick: false,
+          allowEscapeKey: false,
+          allowEnterKey: false,
+        }).then((result) => {
+          if (result.isConfirmed)
+            form.submit();
+        });
+      });
+    </script>
 </head>
 <body class="bg-black text-white">
 <div class="relative min-h-screen" style="background-color: black;">
 
-    <div class="fixed inset-0 z-0 pointer-events-none"
-         style="background-image:url('{{ asset('images/bg-3840x2400.jpg') }}');
+    <div class="fixed inset-0 z-0 pointer-events-none" style="background-image:url('{{ asset('images/bg-3840x2400.jpg') }}');
                 background-size:cover;
                 background-position:center;
                 background-attachment:fixed;
@@ -21,16 +72,14 @@
             <div class="p-4 text-sm uppercase tracking-wide text-gray-300">Produtos</div>
             <nav class="px-2 space-y-1">
                 @foreach($categorias as $c)
-                    <a href="{{ route('cardapio.categoria', ['categoria'=>$c->cd_categoria, 'mesa'=>$mesa]) }}"
-                       class="block px-3 py-2 rounded {{ (isset($categoriaAtiva) && $categoriaAtiva==$c->cd_categoria) ? 'bg-white text-black' : 'hover:bg-white/10' }}">
+                    <a href="{{ route('cardapio.categoria', ['categoria'=>$c->cd_categoria, 'mesa'=>$mesa]) }}" class="block px-3 py-2 rounded {{ (isset($categoriaAtiva) && $categoriaAtiva==$c->cd_categoria) ? 'bg-white text-black' : 'hover:bg-white/10' }}">
                         {{ $c->nm_categoria }}
                     </a>
                 @endforeach
             </nav>
             <div class="p-4 text-sm uppercase tracking-wide text-gray-300">Adicional</div>
             <nav class="px-2 pb-4">
-                <a href="{{ route('cardapio.adicionais', ['mesa'=>$mesa]) }}"
-                   class="block px-3 py-2 rounded {{ ($modo==='adicional') ? 'bg-white text-black' : 'hover:bg-white/10' }}">
+                <a href="{{ route('cardapio.adicionais', ['mesa'=>$mesa]) }}" class="block px-3 py-2 rounded {{ ($modo==='adicional') ? 'bg-white text-black' : 'hover:bg-white/10' }}">
                     Adicionais
                 </a>
             </nav>
@@ -47,19 +96,7 @@
 
             <div class="p-4 md:p-6">
                 <div class="flex justify-center">
-                    <div class="inline-block bg-black text-white border border-white/20 rounded-lg p-5"
-                         style="background-color:#0f0f0f; padding:20px; width:100%; max-width:1200px;">
-
-                        @if(session('success'))
-                            <div class="mb-4 px-4 py-2 rounded text-green-400 border border-green-600" style="background-color:#000; display:inline-block;">
-                                {{ session('success') }}
-                            </div>
-                        @endif
-                        @if(session('error'))
-                            <div class="mb-4 px-4 py-2 rounded text-red-400 border border-red-600" style="background-color:#000; display:inline-block;">
-                                {{ session('error') }}
-                            </div>
-                        @endif
+                    <div class="inline-block bg-black text-white border border-white/20 rounded-lg p-5" style="background-color:#0f0f0f; padding:20px; width:100%; max-width:1200px;">
 
                         <h1 class="text-2xl font-semibold mb-4" style="text-align:center;">{{ $titulo ?? 'Cardápio' }}</h1>
 
