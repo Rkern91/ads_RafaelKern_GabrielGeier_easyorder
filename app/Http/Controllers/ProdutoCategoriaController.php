@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\ProdutoCategoria;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
-use Illuminate\Database\QueryException;
 
 class ProdutoCategoriaController extends Controller
 {
@@ -28,7 +28,7 @@ class ProdutoCategoriaController extends Controller
   public function store(Request $request)
   {
     $data = $request->validate([
-      'nm_categoria' => ['required','max:50','unique:produto_categoria,nm_categoria'],
+      'nm_categoria' => ['required', 'max:50', 'unique:produto_categoria,nm_categoria'],
     ]);
 
     ProdutoCategoria::create($data);
@@ -44,7 +44,7 @@ class ProdutoCategoriaController extends Controller
   public function update(Request $request, ProdutoCategoria $categoria)
   {
     $data = $request->validate([
-      'nm_categoria' => ['required','max:50', Rule::unique('produto_categoria','nm_categoria')->ignore($categoria->cd_categoria,'cd_categoria')],
+      'nm_categoria' => ['required', 'max:50', Rule::unique('produto_categoria', 'nm_categoria')->ignore($categoria->cd_categoria, 'cd_categoria')],
     ]);
 
     $categoria->update($data);

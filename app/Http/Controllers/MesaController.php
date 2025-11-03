@@ -27,7 +27,7 @@ class MesaController extends Controller
   public function store(Request $request)
   {
     $data = $request->validate([
-      'nm_mesa' => ['required','max:25','unique:mesa,nm_mesa'],
+      'nm_mesa' => ['required', 'max:25', 'unique:mesa,nm_mesa'],
     ]);
 
     Mesa::create($data);
@@ -43,7 +43,7 @@ class MesaController extends Controller
   public function update(Request $request, Mesa $mesa)
   {
     $data = $request->validate([
-      'nm_mesa' => ['required','max:25', Rule::unique('mesa','nm_mesa')->ignore($mesa->cd_mesa,'cd_mesa')],
+      'nm_mesa' => ['required', 'max:25', Rule::unique('mesa', 'nm_mesa')->ignore($mesa->cd_mesa, 'cd_mesa')],
     ]);
 
     $mesa->update($data);

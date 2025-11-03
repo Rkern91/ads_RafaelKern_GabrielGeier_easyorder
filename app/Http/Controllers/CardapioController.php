@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Adicional;
 use App\Models\Produto;
 use App\Models\ProdutoCategoria;
-use App\Models\Adicional;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -20,25 +20,25 @@ class CardapioController extends Controller
     $adicionais = Adicional::orderBy('nm_adicional')->get();
 
     return view('cardapio.index', [
-      'categorias'          => $categorias,
-      'modo'                => 'todos',
-      'titulo'              => 'Cardápio',
-      'produtosPorCategoria'=> $produtosPorCategoria,
-      'adicionais'          => $adicionais,
-      'mesa'                => $request->query('mesa'),
+      'categorias' => $categorias,
+      'modo' => 'todos',
+      'titulo' => 'Cardápio',
+      'produtosPorCategoria' => $produtosPorCategoria,
+      'adicionais' => $adicionais,
+      'mesa' => $request->query('mesa'),
     ]);
   }
 
   public function categoria(Request $request, ProdutoCategoria $categoria)
   {
     $categorias = ProdutoCategoria::orderBy('nm_categoria')->get();
-    $produtos   = Produto::where('cd_categoria', $categoria->cd_categoria)->orderBy('nm_produto')->get();
+    $produtos = Produto::where('cd_categoria', $categoria->cd_categoria)->orderBy('nm_produto')->get();
     return view('cardapio.index', [ // <-
-      'categorias'     => $categorias,
-      'modo'           => 'categoria',
-      'titulo'         => $categoria->nm_categoria,
-      'itens'          => $produtos,
-      'mesa'           => $request->query('mesa'),
+      'categorias' => $categorias,
+      'modo' => 'categoria',
+      'titulo' => $categoria->nm_categoria,
+      'itens' => $produtos,
+      'mesa' => $request->query('mesa'),
       'categoriaAtiva' => $categoria->cd_categoria,
     ]);
   }
@@ -49,21 +49,21 @@ class CardapioController extends Controller
     $adicionais = Adicional::orderBy('nm_adicional')->get();
     return view('cardapio.index', [ // <-
       'categorias' => $categorias,
-      'modo'       => 'adicional',
-      'titulo'     => 'Adicionais',
-      'itens'      => $adicionais,
-      'mesa'       => $request->query('mesa'),
+      'modo' => 'adicional',
+      'titulo' => 'Adicionais',
+      'itens' => $adicionais,
+      'mesa' => $request->query('mesa'),
     ]);
   }
 
   public function confirmar(Request $request)
   {
     $mesa = $request->input('mesa');
-    $obs  = trim((string)$request->input('obs'));
+    $obs = trim((string)$request->input('obs'));
     $payload = json_decode($request->input('payload', '{}'), true) ?: [];
 
     $prodSel = collect($payload['produtos'] ?? []);
-    $adiSel  = collect($payload['adicionais'] ?? []);
+    $adiSel = collect($payload['adicionais'] ?? []);
 
     $produtos = Produto::whereIn('cd_produto', $prodSel->pluck('id'))->get()->keyBy('cd_produto');
     $adicionais = Adicional::whereIn('cd_adicional', $adiSel->pluck('id'))->get()->keyBy('cd_adicional');
@@ -71,8 +71,8 @@ class CardapioController extends Controller
     $itensProdutos = $prodSel->map(function ($p) use ($produtos) {
       $m = $produtos[$p['id']] ?? null;
       if (!$m) return null;
-      $q = (int) $p['qtd'];
-      $vl = (float) $m->vl_valor;
+      $q = (int)$p['qtd'];
+      $vl = (float)$m->vl_valor;
       return [
         'id' => (int)$m->cd_produto,
         'nome' => $m->nm_produto,
@@ -86,8 +86,8 @@ class CardapioController extends Controller
     $itensAdicionais = $adiSel->map(function ($a) use ($adicionais) {
       $m = $adicionais[$a['id']] ?? null;
       if (!$m) return null;
-      $q = (int) $a['qtd'];
-      $vl = (float) $m->vl_adicional;
+      $q = (int)$a['qtd'];
+      $vl = (float)$m->vl_adicional;
       return [
         'id' => (int)$m->cd_adicional,
         'nome' => $m->nm_adicional,
@@ -110,7 +110,7 @@ class CardapioController extends Controller
         'restore' => [
           'produtos' => $prodSel->keyBy('id'),
           'adicionais' => $adiSel->keyBy('id'),
-          'obs'        => $obs,
+          'obs' => $obs,
         ],
       ],
     ]);
@@ -142,8 +142,8 @@ class CardapioController extends Controller
     }
 
     $mesa = (int)($cart['mesa'] ?? 0);
-    $obs  = (string)($cart['obs'] ?? '');
-    $produtos   = collect($cart['produtos'] ?? []);   // [id, qtd, preco, subtotal]
+    $obs = (string)($cart['obs'] ?? '');
+    $produtos = collect($cart['produtos'] ?? []);   // [id, qtd, preco, subtotal]
     $adicionais = collect($cart['adicionais'] ?? []); // [id, qtd, preco, subtotal]
     $total = (float)($cart['total'] ?? 0);
 
@@ -151,9 +151,9 @@ class CardapioController extends Controller
       return redirect()->route('cardapio.index')->with('error', 'Nenhum item selecionado.');
     }
 
-    DB::transaction(function() use ($mesa, $total, $obs, $produtos, $adicionais) {
+    DB::transaction(function () use ($mesa, $total, $obs, $produtos, $adicionais) {
       $pedidoId = DB::table('pedido')->insertGetId([
-        'cd_mesa'   => $mesa ?: null,
+        'cd_mesa' => $mesa ?: null,
         'vl_pedido' => $total,
         'dt_pedido' => now(),
         'id_status' => 0,
@@ -162,7 +162,7 @@ class CardapioController extends Controller
 
       foreach ($produtos as $p) {
         DB::table('itens_pedido')->insert([
-          'cd_pedido'  => $pedidoId,
+          'cd_pedido' => $pedidoId,
           'cd_produto' => (int)$p['id'],
           'qt_produto' => (int)$p['qtd'],
         ]);
@@ -172,9 +172,9 @@ class CardapioController extends Controller
         $q = (int)$a['qtd'];
         if ($q < 1) continue;
         $rows = [];
-        for ($i=0; $i<$q; $i++) {
+        for ($i = 0; $i < $q; $i++) {
           $rows[] = [
-            'cd_pedido'           => $pedidoId,
+            'cd_pedido' => $pedidoId,
             'cd_adicional_pedido' => (int)$a['id'],
           ];
         }
@@ -184,6 +184,6 @@ class CardapioController extends Controller
 
     session()->forget('carrinho_preview');
 
-    return redirect()->route('cardapio.index', ['mesa'=>$mesa])->with('success', 'Pedido enviado com sucesso!');
+    return redirect()->route('cardapio.index', ['mesa' => $mesa])->with('success', 'Pedido enviado com sucesso!');
   }
 }

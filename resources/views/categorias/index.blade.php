@@ -9,8 +9,11 @@
                 <div class="inline-block bg-black text-white border border-white/20 rounded-lg p-5" style="background-color:#0f0f0f; padding: 20px;">
                     <form method="get" class="mb-4" style="margin:20px; text-align: center;">
                         <div class="flex gap-2">
-                            <input name="q" value="{{ $q }}" placeholder="Buscar por nome" class="w-full rounded bg-black text-white placeholder-gray-400 border border-white/20 focus:border-white/40 focus:ring-0">
-                            <button class="px-4 py-2 rounded bg-white text-black hover:opacity-90 transition" style="margin-left:10px; color: black;" >Buscar</button>
+                            <input name="q" value="{{ $q }}" placeholder="Buscar por nome"
+                                   class="w-full rounded bg-black text-white placeholder-gray-400 border border-white/20 focus:border-white/40 focus:ring-0">
+                            <button class="px-4 py-2 rounded bg-white text-black hover:opacity-90 transition"
+                                    style="margin-left:10px; color: black;">Buscar
+                            </button>
                         </div>
                     </form>
 
@@ -30,23 +33,33 @@
                                     <td class="px-4 py-2 whitespace-nowrap">{{ $categoria->nm_categoria }}</td>
                                     <td class="px-4 py-2">
                                         <div class="flex items-center gap-2">
-                                            <a href="{{ route('categorias.edit', $categoria) }}" class="px-3 py-1 rounded hover:opacity-90" style="background:#fff;color:#000;margin-right:10px;">Editar</a>
-                                            <form method="post" action="{{ route('categorias.destroy', $categoria) }}" class="inline">
+                                            <a href="{{ route('categorias.edit', $categoria) }}"
+                                               class="px-3 py-1 rounded hover:opacity-90"
+                                               style="background:#fff;color:#000;margin-right:10px;">Editar</a>
+                                            <form method="post" action="{{ route('categorias.destroy', $categoria) }}"
+                                                  class="inline">
                                                 @csrf @method('DELETE')
-                                                <button data-confirm="Deseja remover esta Categoria?" class="px-3 py-1 rounded bg-red-600 text-white hover:opacity-90">Excluir</button>
+                                                <button data-confirm="Deseja remover esta Categoria?"
+                                                        class="px-3 py-1 rounded bg-red-600 text-white hover:opacity-90">
+                                                    Excluir
+                                                </button>
                                             </form>
                                         </div>
                                     </td>
                                 </tr>
                             @empty
-                                <tr><td colspan="3" class="px-4 py-6 text-center text-gray-400">Nenhum registro.</td></tr>
+                                <tr>
+                                    <td colspan="3" class="px-4 py-6 text-center text-gray-400">Nenhum registro.</td>
+                                </tr>
                             @endforelse
                             </tbody>
                         </table>
                     </div>
 
                     <div class="mt-5 flex justify-center" style="margin-top:20px;">
-                        <a href="{{ route('categorias.create') }}" class="inline-flex items-center px-5 py-2 rounded bg-white text-black hover:opacity-90 transition" style="color: black">Nova categoria</a>
+                        <a href="{{ route('categorias.create') }}"
+                           class="inline-flex items-center px-5 py-2 rounded bg-white text-black hover:opacity-90 transition"
+                           style="color: black">Nova categoria</a>
                     </div>
 
                     <div class="mt-4">{{ $categorias->links() }}</div>

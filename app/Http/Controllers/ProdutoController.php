@@ -4,10 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Produto;
 use App\Models\ProdutoCategoria;
-use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 use Illuminate\Database\QueryException;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Http\Request;
 
 class ProdutoController extends Controller
 {
@@ -23,7 +21,7 @@ class ProdutoController extends Controller
       ->paginate(10)
       ->withQueryString();
 
-    return view('produtos.index', compact('produtos','categorias','q','cat'));
+    return view('produtos.index', compact('produtos', 'categorias', 'q', 'cat'));
   }
 
   public function create()
@@ -35,11 +33,11 @@ class ProdutoController extends Controller
   public function store(Request $request)
   {
     $validated = $request->validate([
-      'cd_categoria' => ['required','integer','exists:produto_categoria,cd_categoria'],
-      'nm_produto'   => ['required','string','max:50'],
-      'vl_valor'     => ['required','numeric','min:0'],
-      'ds_produto'   => ['nullable','string','max:100'],
-      'imagem'       => ['nullable','image','max:4096'],
+      'cd_categoria' => ['required', 'integer', 'exists:produto_categoria,cd_categoria'],
+      'nm_produto' => ['required', 'string', 'max:50'],
+      'vl_valor' => ['required', 'numeric', 'min:0'],
+      'ds_produto' => ['nullable', 'string', 'max:100'],
+      'imagem' => ['nullable', 'image', 'max:4096'],
     ]);
 
     unset($validated['imagem']);
@@ -50,7 +48,7 @@ class ProdutoController extends Controller
     if ($request->hasFile('imagem')) {
       $f = $request->file('imagem');
       $bin = file_get_contents($f->getRealPath());
-      $produto->img_b64  = base64_encode($bin);
+      $produto->img_b64 = base64_encode($bin);
       $produto->img_mime = $f->getMimeType();
     }
 
@@ -62,12 +60,12 @@ class ProdutoController extends Controller
   public function update(Request $request, \App\Models\Produto $produto)
   {
     $validated = $request->validate([
-      'cd_categoria'   => ['required','integer','exists:produto_categoria,cd_categoria'],
-      'nm_produto'     => ['required','string','max:50'],
-      'vl_valor'       => ['required','numeric','min:0'],
-      'ds_produto'     => ['nullable','string','max:100'],
-      'imagem'         => ['nullable','image','max:4096'],
-      'remover_imagem' => ['nullable','boolean'],
+      'cd_categoria' => ['required', 'integer', 'exists:produto_categoria,cd_categoria'],
+      'nm_produto' => ['required', 'string', 'max:50'],
+      'vl_valor' => ['required', 'numeric', 'min:0'],
+      'ds_produto' => ['nullable', 'string', 'max:100'],
+      'imagem' => ['nullable', 'image', 'max:4096'],
+      'remover_imagem' => ['nullable', 'boolean'],
     ]);
 
     $remover = (bool)($validated['remover_imagem'] ?? false);
@@ -76,12 +74,12 @@ class ProdutoController extends Controller
     $produto->fill($validated);
 
     if ($remover) {
-      $produto->img_b64  = null;
+      $produto->img_b64 = null;
       $produto->img_mime = null;
     } elseif ($request->hasFile('imagem')) {
       $f = $request->file('imagem');
       $bin = file_get_contents($f->getRealPath());
-      $produto->img_b64  = base64_encode($bin);
+      $produto->img_b64 = base64_encode($bin);
       $produto->img_mime = $f->getMimeType();
     }
 
@@ -105,7 +103,7 @@ class ProdutoController extends Controller
   public function edit(Produto $produto)
   {
     $categorias = ProdutoCategoria::orderBy('nm_categoria')->get();
-    return view('produtos.edit', compact('produto','categorias'));
+    return view('produtos.edit', compact('produto', 'categorias'));
   }
 
   public function destroy(Produto $produto)

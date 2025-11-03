@@ -24,12 +24,14 @@
             </nav>
             <div class="p-4 text-sm uppercase tracking-wide text-gray-300">Adicional</div>
             <nav class="px-2 pb-4">
-                <a href="{{ route('cardapio.adicionais', ['mesa'=>$mesa]) }}" class="block px-3 py-2 rounded hover:bg-white/10">Adicionais</a>
+                <a href="{{ route('cardapio.adicionais', ['mesa'=>$mesa]) }}"
+                   class="block px-3 py-2 rounded hover:bg-white/10">Adicionais</a>
             </nav>
         </aside>
 
         <main class="flex-1">
-            <header class="flex items-center justify-between px-4 md:px-6 h-16 border-b border-white/10" style="background-color:#0f0f0f;">
+            <header class="flex items-center justify-between px-4 md:px-6 h-16 border-b border-white/10"
+                    style="background-color:#0f0f0f;">
                 <div class="font-semibold text-lg">Confirme seu Pedido</div>
                 <div class="relative">
                     <button class="px-3 py-1 rounded border border-white/20 text-black">🛒</button>
@@ -58,10 +60,13 @@
                                     <div class="text-sm uppercase tracking-wide text-gray-300 mb-2">Produtos</div>
                                     <div class="space-y-2">
                                         @foreach($produtos as $i)
-                                            <div class="flex items-center justify-between border border-white/10 rounded p-3" style="background-color:#0f0f0f; padding: 5px; margin-bottom: 10px;">
+                                            <div class="flex items-center justify-between border border-white/10 rounded p-3"
+                                                 style="background-color:#0f0f0f; padding: 5px; margin-bottom: 10px;">
                                                 <div class="min-w-0">
                                                     <div class="font-medium">{{ $i['qtd'] }} × {{ $i['nome'] }}</div>
-                                                    <div class="text-xs text-gray-300">R$ {{ number_format($i['preco'],2,',','.') }} cada</div>
+                                                    <div class="text-xs text-gray-300">
+                                                        R$ {{ number_format($i['preco'],2,',','.') }} cada
+                                                    </div>
                                                 </div>
                                                 <div class="font-medium">
                                                     R$ {{ number_format($i['subtotal'],2,',','.') }}
@@ -77,10 +82,13 @@
                                     <div class="text-sm uppercase tracking-wide text-gray-300 mb-2">Adicionais</div>
                                     <div class="space-y-2">
                                         @foreach($adicionais as $i)
-                                            <div class="flex items-center justify-between border border-white/10 rounded p-3" style="background-color:#0f0f0f; padding: 5px; margin-bottom: 10px;">
+                                            <div class="flex items-center justify-between border border-white/10 rounded p-3"
+                                                 style="background-color:#0f0f0f; padding: 5px; margin-bottom: 10px;">
                                                 <div class="min-w-0">
                                                     <div class="font-medium">{{ $i['qtd'] }} × {{ $i['nome'] }}</div>
-                                                    <div class="text-xs text-gray-300">R$ {{ number_format($i['preco'],2,',','.') }} cada</div>
+                                                    <div class="text-xs text-gray-300">
+                                                        R$ {{ number_format($i['preco'],2,',','.') }} cada
+                                                    </div>
                                                 </div>
                                                 <div class="font-medium">
                                                     R$ {{ number_format($i['subtotal'],2,',','.') }}
@@ -93,23 +101,28 @@
 
                             <div class="mt-4">
                                 <div class="text-sm uppercase tracking-wide text-gray-300 mb-2">Observação</div>
-                                <div class="border border-white/10 rounded p-3" style="background-color:#0f0f0f; padding: 5px;">
+                                <div class="border border-white/10 rounded p-3"
+                                     style="background-color:#0f0f0f; padding: 5px;">
                                     {{ $obs ?: '—' }}
                                 </div>
                             </div>
 
                             <div class="mt-6 flex items-center justify-between border-t border-white/10 pt-4">
                                 <div class="text-lg font-semibold">Total</div>
-                                <div class="text-lg font-semibold" style="color: green;">R$ {{ number_format($total,2,',','.') }}</div>
+                                <div class="text-lg font-semibold" style="color: green;">
+                                    R$ {{ number_format($total,2,',','.') }}</div>
                             </div>
 
                             <div class="mt-6 flex justify-center gap-3">
-                                <a href="{{ route('cardapio.index', ['mesa'=>$cart['mesa'], 'restore'=>1]) }}" class="px-6 py-2 rounded bg-gray-500 text-black hover:opacity-90 transition" style="color:white;">
+                                <a href="{{ route('cardapio.index', ['mesa'=>$cart['mesa'], 'restore'=>1]) }}"
+                                   class="px-6 py-2 rounded bg-gray-500 text-black hover:opacity-90 transition"
+                                   style="color:white;">
                                     Alterar
                                 </a>
                                 <form method="post" action="{{ route('pedido.finalizar') }}">
                                     @csrf
-                                    <button class="px-6 py-2 rounded text-black hover:opacity-90 transition" style="color:white; background-color: darkgreen">
+                                    <button class="px-6 py-2 rounded text-black hover:opacity-90 transition"
+                                            style="color:white; background-color: darkgreen">
                                         Enviar pedido
                                     </button>
                                 </form>

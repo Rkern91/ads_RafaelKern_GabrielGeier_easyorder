@@ -1,19 +1,19 @@
 <?php
 
+use App\Http\Controllers\CardapioController;
+use App\Http\Controllers\CozinhaController;
 use App\Http\Controllers\MesaController;
 use App\Http\Controllers\ProdutoCategoriaController;
 use App\Http\Controllers\ProdutoController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\CardapioController;
-use App\Http\Controllers\CozinhaController;
-  
-  Route::get('/', function () {
-    return view('welcome');
-  });
+
+Route::get('/', function () {
+  return view('welcome');
+});
 
 Route::get('/dashboard', function () {
-    return view('dashboard');
+  return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
@@ -60,9 +60,9 @@ Route::middleware('auth')->group(function () {
   Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
 });
 
-Route::get('/cardapio', [CardapioController::class,'index'])->name('cardapio.index');
-Route::get('/cardapio/categoria/{categoria}', [CardapioController::class,'categoria'])->name('cardapio.categoria');
-Route::get('/cardapio/adicionais', [CardapioController::class,'adicionais'])->name('cardapio.adicionais');
+Route::get('/cardapio', [CardapioController::class, 'index'])->name('cardapio.index');
+Route::get('/cardapio/categoria/{categoria}', [CardapioController::class, 'categoria'])->name('cardapio.categoria');
+Route::get('/cardapio/adicionais', [CardapioController::class, 'adicionais'])->name('cardapio.adicionais');
 Route::post('/cardapio/confirmar', [CardapioController::class, 'confirmar'])->name('cardapio.confirmar');
 Route::get('/cardapio/revisao', [CardapioController::class, 'revisao'])->name('cardapio.revisao');
 Route::post('/cardapio/finalizar', [CardapioController::class, 'finalizar'])->name('pedido.finalizar');
@@ -84,4 +84,4 @@ Route::get('/_pingdb', function () {
     return response($e->getMessage(), 500);
   }
 });
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
