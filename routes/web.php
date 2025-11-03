@@ -6,6 +6,7 @@ use App\Http\Controllers\ProdutoController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CardapioController;
+use App\Http\Controllers\CozinhaController;
   
   Route::get('/', function () {
     return view('welcome');
@@ -65,6 +66,12 @@ Route::get('/cardapio/adicionais', [CardapioController::class,'adicionais'])->na
 Route::post('/cardapio/confirmar', [CardapioController::class, 'confirmar'])->name('cardapio.confirmar');
 Route::get('/cardapio/revisao', [CardapioController::class, 'revisao'])->name('cardapio.revisao');
 Route::post('/cardapio/finalizar', [CardapioController::class, 'finalizar'])->name('pedido.finalizar');
+
+Route::middleware(['auth'])->group(function () {
+  Route::get('/cozinha', [CozinhaController::class, 'index'])->name('cozinha.index');
+  Route::post('/cozinha/{pedido}/preparar', [CozinhaController::class, 'preparar'])->name('cozinha.preparar');
+  Route::post('/cozinha/{pedido}/servir', [CozinhaController::class, 'servir'])->name('cozinha.servir');
+});
 
 Route::get('/_dbcheck', function () {
   return response()->json(config('database.connections.pgsql'));
