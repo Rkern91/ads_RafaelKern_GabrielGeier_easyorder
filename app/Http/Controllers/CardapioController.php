@@ -31,15 +31,13 @@ class CardapioController extends Controller
 
   public function categoria(Request $request, ProdutoCategoria $categoria)
   {
-    $categorias = ProdutoCategoria::orderBy('nm_categoria')->get();
-    $produtos = Produto::where('cd_categoria', $categoria->cd_categoria)->orderBy('nm_produto')->get();
-    return view('cardapio.index', [ // <-
-      'categorias' => $categorias,
-      'modo' => 'categoria',
-      'titulo' => $categoria->nm_categoria,
-      'itens' => $produtos,
-      'mesa' => $request->query('mesa'),
-      'categoriaAtiva' => $categoria->cd_categoria,
+    $categoriaProduto = ProdutoCategoria::where('cd_categoria', $categoria->cd_categoria)->get()[0];
+    $produtos         = Produto::where('cd_categoria', $categoria->cd_categoria)->orderBy('nm_produto')->get();
+    
+    return view('cardapio.categoria', [ // <-
+      'categorias' => $categoriaProduto,
+      'mesa'       => '01',
+      'itens'      => $produtos
     ]);
   }
 
@@ -186,4 +184,64 @@ class CardapioController extends Controller
 
     return redirect()->route('cardapio.index', ['mesa' => $mesa])->with('success', 'Pedido enviado com sucesso!');
   }
+  
+  public function navigation(Request $request)
+  {
+    $categorias = ProdutoCategoria::orderBy('nm_categoria')->get();
+    return view('cardapio.navigation', [
+      'categorias' => $categorias,
+      'mesa' => $request->query('mesa'),
+    ]);
+  }
+  
+  public function adicionaisProduto(Request $request, Produto $produto)
+  {
+    $adicionais = Adicional::orderBy('nm_adicional')->get();
+    return view('cardapio.adicionais', [
+      'produto' => $produto,
+      'adicionais' => $adicionais,
+      'mesa' => $request->query('mesa'),
+    ]);
+  }
+  
+  public function adicionarCarrinho(Request $request)
+  {
+    $produtoId = $request->input('produto_id');
+    $mesa = $request->input('mesa');
+    $adicionais = $request->input('adicionais', []);
+    
+    $produto = Produto::findOrFail($produtoId);
+    $adics = Adicional::whereIn('cd_adicional', $adicionais)->get();
+    
+    $cart = session('carrinho_preview', [
+      'mesa' => $mesa,
+      'produtos' => [],
+      'adicionais' => [],
+      'total' => 0
+    ]);
+    
+    $cart['produtos'][] = [
+      'id' => $produto->cd_produto,
+      'nome' => $produto->nm_produto,
+      'preco' => $produto->vl_valor,
+      'subtotal' => $produto->vl_valor,
+      'tipo' => 'produto'
+    ];
+    
+    foreach ($adics as $a) {
+      $cart['adicionais'][] = [
+        'id' => $a->cd_adicional,
+        'nome' => $a->nm_adicional,
+        'preco' => $a->vl_adicional,
+        'subtotal' => $a->vl_adicional,
+        'tipo' => 'adicional'
+      ];
+    }
+    
+    $cart['total'] = collect($cart['produtos'])->sum('subtotal') + collect($cart['adicionais'])->sum('subtotal');
+    session(['carrinho_preview' => $cart]);
+    
+    return redirect()->route('cardapio.revisao');
+  }
+  
 }

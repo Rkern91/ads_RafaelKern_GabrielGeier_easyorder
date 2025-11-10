@@ -10,8 +10,16 @@
                      style="background-color:#0f0f0f; padding:20px;">
                     <form method="get" class="mb-4" style="margin:20px; text-align:center;">
                         <div class="flex gap-2">
-                            <input name="q" value="{{ $q }}" placeholder="Buscar por nome"
+                            <input name="nm_adicional" value="{{ $nmAdicional }}" placeholder="Buscar por nome"
                                    class="w-full rounded bg-black text-white placeholder-gray-400 border border-white/20 focus:border-white/40 focus:ring-0">
+                            <select name="cd_categoria"
+                                    class="rounded bg-black text-white border border-white/20 focus:border-white/40 focus:ring-0"
+                                    style="color:black;">
+                                <option value="">Todas categorias</option>
+                                @foreach($categorias as $c)
+                                    <option value="{{ $c->cd_categoria }}" @selected($cdCategoria==$c->cd_categoria)>{{ $c->nm_categoria }}</option>
+                                @endforeach
+                            </select>
                             <button class="px-4 py-2 rounded bg-white text-black hover:opacity-90 transition"
                                     style="margin-left:10px; color:black;">Buscar
                             </button>
@@ -24,8 +32,9 @@
                             <tr class="border-b border-white/20">
                                 <th class="px-4 py-2 text-xs font-semibold uppercase tracking-wide">Código</th>
                                 <th class="px-4 py-2 text-xs font-semibold uppercase tracking-wide">Nome</th>
-                                <th class="px-4 py-2 text-xs font-semibold uppercase tracking-wide">Valor</th>
+                                <th class="px-4 py-2 text-xs font-semibold uppercase tracking-wide">Categoria</th>
                                 <th class="px-4 py-2 text-xs font-semibold uppercase tracking-wide">Descrição</th>
+                                <th class="px-4 py-2 text-xs font-semibold uppercase tracking-wide">Valor</th>
                                 <th class="px-4 py-2"></th>
                             </tr>
                             </thead>
@@ -34,9 +43,9 @@
                                 <tr class="border-b border-white/10">
                                     <td class="px-4 py-2 whitespace-nowrap">{{ $a->cd_adicional }}</td>
                                     <td class="px-4 py-2 whitespace-nowrap">{{ $a->nm_adicional }}</td>
-                                    <td class="px-4 py-2 whitespace-nowrap">
-                                        R$ {{ number_format($a->vl_adicional,2,',','.') }}</td>
+                                    <td class="px-4 py-2 whitespace-nowrap">{{ optional($a->categoria)->nm_categoria }}</td>
                                     <td class="px-4 py-2 whitespace-nowrap">{{ $a->ds_adicional }}</td>
+                                    <td class="px-4 py-2 whitespace-nowrap">R$ {{ number_format($a->vl_adicional,2,',','.') }}</td>
                                     <td class="px-4 py-2">
                                         <div class="flex items-center gap-2">
                                             <a href="{{ route('adicionais.edit', $a) }}"

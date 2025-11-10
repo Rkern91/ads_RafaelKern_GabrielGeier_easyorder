@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Adicional;
+use App\Models\ProdutoCategoria;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 
@@ -10,33 +11,53 @@ class AdicionalController extends Controller
 {
   public function index(Request $request)
   {
-    $q = trim($request->get('q', ''));
-    $adicionais = Adicional::when($q, fn($s) => $s->where('nm_adicional', 'ilike', "%$q%"))->orderBy('nm_adicional')->paginate(10)->withQueryString();
-    return view('adicionais.index', compact('adicionais', 'q'));
+    $nmAdicional = trim($request->get('nm_adicional', ''));
+    $cdCategoria = $request->integer('cd_categoria');
+    $categorias  = ProdutoCategoria::orderBy('nm_categoria')->get();
+    $adicionais  = Adicional::with('categoria')
+                     ->when($nmAdicional, fn($s) => $s->where('nm_adicional', 'ilike', "%$nmAdicional%"))
+                     ->when($cdCategoria, fn($s) => $s->where('cd_categoria', $cdCategoria))
+                     ->orderBy('nm_adicional')
+                     ->paginate(10)
+                     ->withQueryString();
+    
+    return view(
+      'adicionais.index',
+      compact(
+        'adicionais',
+        'categorias',
+        'nmAdicional',
+        'cdCategoria'
+      )
+    );
   }
 
   public function create()
   {
-    return view('adicionais.create');
+    $categorias = ProdutoCategoria::orderBy('nm_categoria')->get();
+    
+    return view('adicionais.create', compact('categorias'));
   }
 
   public function store(Request $request)
   {
     $validated = $request->validate([
-      'nm_adicional' => ['required', 'string', 'max:50'],
+      'nm_adicional' => ['required', 'string',  'max:50'],
       'vl_adicional' => ['required', 'numeric', 'min:0'],
-      'ds_adicional' => ['nullable', 'string', 'max:255'],
-      'imagem' => ['nullable', 'image', 'max:4096'],
+      'ds_adicional' => ['nullable', 'string',  'max:255'],
+      'cd_categoria' => ['required', 'integer', 'exists:produto_categoria,cd_categoria'],
+      'imagem'       => ['nullable', 'image',   'max:4096'],
     ]);
 
     unset($validated['imagem']);
 
     $a = new Adicional($validated);
 
-    if ($request->hasFile('imagem')) {
-      $f = $request->file('imagem');
-      $bin = file_get_contents($f->getRealPath());
-      $a->img_b64 = base64_encode($bin);
+    if ($request->hasFile('imagem'))
+    {
+      $f           = $request->file('imagem');
+      $bin         = file_get_contents($f->getRealPath());
+      $a->img_b64  = base64_encode($bin);
       $a->img_mime = $f->getMimeType();
     }
 
@@ -47,16 +68,19 @@ class AdicionalController extends Controller
 
   public function edit(Adicional $adicional)
   {
-    return view('adicionais.edit', compact('adicional'));
+    $categorias = ProdutoCategoria::orderBy('nm_categoria')->get();
+    
+    return view('adicionais.edit', compact('adicional', 'categorias'));
   }
 
   public function update(Request $request, Adicional $adicional)
   {
     $validated = $request->validate([
-      'nm_adicional' => ['required', 'string', 'max:50'],
-      'vl_adicional' => ['required', 'numeric', 'min:0'],
-      'ds_adicional' => ['nullable', 'string', 'max:255'],
-      'imagem' => ['nullable', 'image', 'max:4096'],
+      'nm_adicional'   => ['required', 'string',  'max:50'],
+      'vl_adicional'   => ['required', 'numeric', 'min:0'],
+      'ds_adicional'   => ['nullable', 'string',  'max:255'],
+      'cd_categoria'   => ['required', 'integer', 'exists:produto_categoria,cd_categoria'],
+      'imagem'         => ['nullable', 'image',   'max:4096'],
       'remover_imagem' => ['nullable', 'boolean'],
     ]);
 
@@ -65,13 +89,16 @@ class AdicionalController extends Controller
 
     $adicional->fill($validated);
 
-    if ($remover) {
-      $adicional->img_b64 = null;
+    if ($remover)
+    {
+      $adicional->img_b64  = null;
       $adicional->img_mime = null;
-    } elseif ($request->hasFile('imagem')) {
-      $f = $request->file('imagem');
-      $bin = file_get_contents($f->getRealPath());
-      $adicional->img_b64 = base64_encode($bin);
+    }
+    elseif ($request->hasFile('imagem'))
+    {
+      $f                   = $request->file('imagem');
+      $bin                 = file_get_contents($f->getRealPath());
+      $adicional->img_b64  = base64_encode($bin);
       $adicional->img_mime = $f->getMimeType();
     }
 
@@ -82,10 +109,13 @@ class AdicionalController extends Controller
 
   public function destroy(Adicional $adicional)
   {
-    try {
+    try
+    {
       $adicional->delete();
       return redirect()->route('adicionais.index')->with('success', 'Adicional excluído.');
-    } catch (QueryException $e) {
+    }
+    catch (QueryException $e)
+    {
       return redirect()->route('adicionais.index')->with('error', 'Não é possível excluir.');
     }
   }

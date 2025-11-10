@@ -14,6 +14,18 @@
                         @method('PUT')
 
                         <div>
+                            <label for="cd_categoria" class="block text-sm mb-2 text-white">Categoria</label>
+                            <select id="cd_categoria" style="color: black;" name="cd_categoria"
+                                    class="w-full rounded bg-black text-white border border-white/20 focus:border-white/40 focus:ring-0 p-2.5">
+                                @foreach($categorias as $c)
+                                    <option value="{{ $c->cd_categoria }}" @selected(old('cd_categoria', $adicional->cd_categoria)==$c->cd_categoria)>{{ $c->nm_categoria }}</option>
+                                @endforeach
+                            </select>
+                            @error('cd_categoria')
+                            <div class="text-sm text-red-400 mt-1">{{ $message }}</div> @enderror
+                        </div>
+
+                        <div>
                             <label for="nm_adicional" class="block text-sm mb-2 text-white">Nome</label>
                             <input style="color: black;" id="nm_adicional" name="nm_adicional"
                                    value="{{ old('nm_adicional', $adicional->nm_adicional) }}"
