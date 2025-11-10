@@ -66,12 +66,14 @@ CREATE TABLE produto(
 --ADICIONAL É ALGUM EXTRA (Ex.: Porção de Fritas, Bife, Arroz)
 CREATE TABLE adicional(
   cd_adicional SERIAL,
+  cd_categoria INT,
   nm_adicional VARCHAR(50)   NOT NULL,
   vl_adicional NUMERIC(15,2) NOT NULL,
   ds_adicional VARCHAR(255),
   img_b64      TEXT,
   img_mime     VARCHAR(80),
-  CONSTRAINT pk_cd_adicional PRIMARY KEY (cd_adicional)
+  CONSTRAINT pk_cd_adicional PRIMARY KEY (cd_adicional),
+  CONSTRAINT fk_cd_categoria FOREIGN KEY (cd_categoria) REFERENCES produto_categoria (cd_categoria) ON DELETE RESTRICT
 );
 
 CREATE TABLE pedido(
