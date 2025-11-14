@@ -60,12 +60,15 @@ Route::middleware('auth')->group(function () {
   Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
 });
 
-Route::get('/cardapio', [CardapioController::class, 'index'])->name('cardapio.index');
-Route::get('/cardapio/categoria/{categoria}', [CardapioController::class, 'categoria'])->name('cardapio.categoria');
-Route::get('/cardapio/adicionais', [CardapioController::class, 'adicionais'])->name('cardapio.adicionais');
-Route::post('/cardapio/confirmar', [CardapioController::class, 'confirmar'])->name('cardapio.confirmar');
-Route::get('/cardapio/revisao', [CardapioController::class, 'revisao'])->name('cardapio.revisao');
-Route::post('/cardapio/finalizar', [CardapioController::class, 'finalizar'])->name('pedido.finalizar');
+Route::get('/cardapio',                       [CardapioController::class, 'obterCardapioCompleto']) ->name('cardapio.index');
+Route::get('/cardapio/categoria/{categoria}', [CardapioController::class, 'obterCardapioCategoria'])->name('cardapio.categoria');
+Route::get('/cardapio/adicionais',            [CardapioController::class, 'adicionais'])            ->name('cardapio.adicionais');
+Route::post('/cardapio/confirmar',            [CardapioController::class, 'confirmar'])             ->name('cardapio.confirmar');
+Route::get('/cardapio/revisao',               [CardapioController::class, 'revisao'])               ->name('cardapio.revisao');
+Route::post('/cardapio/finalizar',            [CardapioController::class, 'finalizar'])             ->name('pedido.finalizar');
+Route::get('/cardapio/navigation',            [CardapioController::class, 'navigation'])            ->name('cardapio.navigation');
+Route::get('/cardapio/adicionais/{produto}',  [CardapioController::class, 'adicionaisProduto'])     ->name('cardapio.adicionais');
+Route::post('/cardapio/carrinho/add',         [CardapioController::class, 'adicionarCarrinho'])     ->name('cardapio.carrinho.add');
 
 Route::middleware(['auth'])->group(function () {
   Route::get('/cozinha', [CozinhaController::class, 'index'])->name('cozinha.index');

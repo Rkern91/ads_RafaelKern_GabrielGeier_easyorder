@@ -4,41 +4,53 @@ namespace App\Http\Controllers;
 
 use App\Models\Adicional;
 use App\Models\Produto;
-use App\Models\ProdutoCategoria;
-use Illuminate\Http\Request;
+use App\Models\ProdutoCategoria    as ProdutoCategoria;
+use Illuminate\Contracts\View\View as View;
+use Illuminate\Http\Request        as Request;
 use Illuminate\Support\Facades\DB;
 
 class CardapioController extends Controller
 {
-  public function index(Request $request)
+  /**
+   * @param  Request $request
+   * @return \Illuminate\Contracts\View\Factory|View
+   */
+  public function obterCardapioCompleto(Request $request)
   {
-    $categorias = ProdutoCategoria::orderBy('nm_categoria')->get();
-    $produtosPorCategoria = Produto::orderBy('nm_produto')
-      ->get()
-      ->groupBy('cd_categoria');
-
-    $adicionais = Adicional::orderBy('nm_adicional')->get();
-
-    return view('cardapio.index', [
-      'categorias' => $categorias,
-      'modo' => 'todos',
-      'titulo' => 'Cardápio',
-      'produtosPorCategoria' => $produtosPorCategoria,
-      'adicionais' => $adicionais,
-      'mesa' => $request->query('mesa'),
-    ]);
-  }
-
-  public function categoria(Request $request, ProdutoCategoria $categoria)
-  {
-    $categoriaProduto = ProdutoCategoria::where('cd_categoria', $categoria->cd_categoria)->get()[0];
-    $produtos         = Produto::where('cd_categoria', $categoria->cd_categoria)->orderBy('nm_produto')->get();
+    $categorias         = ProdutoCategoria::orderBy('nm_categoria')->get();
+    $id_categoria_ativa = $categorias[0]->cd_categoria;
+    $produtos           = Produto::where('cd_categoria', $id_categoria_ativa)->orderBy('nm_produto')->get();
     
-    return view('cardapio.categoria', [ // <-
-      'categorias' => $categoriaProduto,
-      'mesa'       => '01',
-      'itens'      => $produtos
-    ]);
+    return view(
+      'cardapio.index',
+      compact(
+        'categorias',
+        'id_categoria_ativa',
+        'produtos'
+      )
+    );
+  }
+  
+  /**
+   * Obtem os produtos de uma categoria para listagem.
+   * @param Request          $request
+   * @param ProdutoCategoria $categoria
+   * @return \Illuminate\Contracts\View\Factory|View
+   */
+  public function obterCardapioCategoria(Request $request, ProdutoCategoria $categoria)
+  {
+    $categorias          = ProdutoCategoria::orderBy('nm_categoria')->get();
+    $id_categoria_ativa  = $categoria->cd_categoria;
+    $produtos            = Produto::where('cd_categoria', $id_categoria_ativa)->orderBy('nm_produto')->get();
+    
+    return view(
+      'cardapio.index',
+      compact(
+        'categorias',
+        'id_categoria_ativa',
+        'produtos'
+      )
+    );
   }
 
   public function adicionais(Request $request)
@@ -123,7 +135,7 @@ class CardapioController extends Controller
       return redirect()->route('cardapio.index');
     }
 
-    $categorias = \App\Models\ProdutoCategoria::orderBy('nm_categoria')->get();
+    $categorias = ProdutoCategoria::orderBy('nm_categoria')->get();
     $mesa = $cart['mesa'] ?? null;
     return view('cardapio.confirmacao', [
       'categorias' => $categorias,
