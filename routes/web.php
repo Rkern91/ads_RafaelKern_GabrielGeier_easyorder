@@ -6,6 +6,7 @@ use App\Http\Controllers\MesaController;
 use App\Http\Controllers\ProdutoCategoriaController;
 use App\Http\Controllers\ProdutoController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\PagamentoController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -75,6 +76,10 @@ Route::middleware(['auth'])->group(function () {
   Route::post('/cozinha/{pedido}/preparar', [CozinhaController::class, 'preparar'])->name('cozinha.preparar');
   Route::post('/cozinha/{pedido}/servir', [CozinhaController::class, 'servir'])->name('cozinha.servir');
 });
+
+Route::get('/pagamento/{pedido}', [PagamentoController::class,'show'])->name('pagamento.show');
+Route::post('/pagamento/{pedido}/simular', [PagamentoController::class,'simular'])->name('pagamento.simular'); // sandbox
+Route::get('/pagamento/{pedido}/status', [PagamentoController::class,'status'])->name('pagamento.status');
 
 Route::get('/_dbcheck', function () {
   return response()->json(config('database.connections.pgsql'));

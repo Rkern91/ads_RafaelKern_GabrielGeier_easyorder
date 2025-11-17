@@ -83,6 +83,9 @@ CREATE TABLE pedido(
   dt_pedido TIMESTAMP DEFAULT NOW(),
   id_status INT CHECK (id_status IN(0,1,2)) NOT NULL, -- 'Em Aberto', 'Preparando', 'Servido',
   ds_observacao TEXT,
+  ds_asaas_customer_id TEXT,
+  ds_asaas_payment_id TEXT,
+  ds_asaas_return TEXT,
   CONSTRAINT pk_cd_pedido PRIMARY KEY (cd_pedido),
   CONSTRAINT fk_cd_mesa_pedido FOREIGN KEY (cd_mesa) REFERENCES mesa (cd_mesa) ON DELETE RESTRICT
 );
@@ -101,3 +104,5 @@ CREATE TABLE adicionais_pedido(
   CONSTRAINT fk_cd_pedido           FOREIGN KEY (cd_pedido)           REFERENCES pedido    (cd_pedido)    ON DELETE CASCADE,
   CONSTRAINT fk_cd_adicional_pedido FOREIGN KEY (cd_adicional_pedido) REFERENCES adicional (cd_adicional) ON DELETE CASCADE
 );
+
+-- INSERT INTO pedido (vl_pedido, id_status) VALUES (5, 0);
