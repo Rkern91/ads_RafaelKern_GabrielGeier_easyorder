@@ -96,8 +96,10 @@ CREATE TABLE itens_pedido(
 );
 
 CREATE TABLE adicionais_pedido(
-  cd_pedido           INT,
-  cd_adicional_pedido INT,
-  CONSTRAINT fk_cd_pedido           FOREIGN KEY (cd_pedido)           REFERENCES pedido    (cd_pedido)    ON DELETE CASCADE,
-  CONSTRAINT fk_cd_adicional_pedido FOREIGN KEY (cd_adicional_pedido) REFERENCES adicional (cd_adicional) ON DELETE CASCADE
+  cd_pedido            INT,
+  cd_adicional_produto INT,
+  cd_adicional_pedido  INT,
+  CONSTRAINT fk_cd_pedido           FOREIGN KEY (cd_pedido)            REFERENCES pedido    (cd_pedido)    ON DELETE CASCADE,
+  CONSTRAINT fk_cd_adicional_pedido FOREIGN KEY (cd_adicional_pedido)  REFERENCES adicional (cd_adicional) ON DELETE CASCADE,
+  CONSTRAINT fk_cd_produto          FOREIGN KEY (cd_adicional_produto) REFERENCES produto   (cd_produto)   ON DELETE CASCADE
 );

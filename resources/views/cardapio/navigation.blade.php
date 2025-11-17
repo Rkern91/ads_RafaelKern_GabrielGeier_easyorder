@@ -1,8 +1,10 @@
 <nav x-data="{ open: false }" style="background-color: black;"
      class="bg-white dark:bg-gray-800 border-b dark:border-gray-700">
-    <!-- Primary Navigation Menu -->
+
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16">
+
+            <!-- ESQUERDA: Logo + Categorias -->
             <div class="flex">
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
@@ -23,7 +25,18 @@
                     @endforeach
                 </div>
             </div>
+
+            <!-- DIREITA: Novos links -->
+            <div class="hidden sm:flex items-center space-x-8">
+                <x-nav-link href="{{ route('cardapio.revisao') }}">
+                    🛒 Carrinho
+                </x-nav-link>
+
+                <x-nav-link href="{{ route('cardapio.conta') }}">
+                    💳 Conta da Mesa
+                </x-nav-link>
+            </div>
+
         </div>
     </div>
 </nav>
-

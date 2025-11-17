@@ -60,15 +60,16 @@ Route::middleware('auth')->group(function () {
   Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
 });
 
-Route::get('/cardapio',                       [CardapioController::class, 'obterCardapioCompleto']) ->name('cardapio.index');
-Route::get('/cardapio/categoria/{categoria}', [CardapioController::class, 'obterCardapioCategoria'])->name('cardapio.categoria');
-Route::get('/cardapio/adicionais',            [CardapioController::class, 'adicionais'])            ->name('cardapio.adicionais');
-Route::post('/cardapio/confirmar',            [CardapioController::class, 'confirmar'])             ->name('cardapio.confirmar');
-Route::get('/cardapio/revisao',               [CardapioController::class, 'revisao'])               ->name('cardapio.revisao');
-Route::post('/cardapio/finalizar',            [CardapioController::class, 'finalizar'])             ->name('pedido.finalizar');
-Route::get('/cardapio/navigation',            [CardapioController::class, 'navigation'])            ->name('cardapio.navigation');
-Route::get('/cardapio/adicionais/{produto}',  [CardapioController::class, 'adicionaisProduto'])     ->name('cardapio.adicionais');
-Route::post('/cardapio/carrinho/add',         [CardapioController::class, 'adicionarCarrinho'])     ->name('cardapio.carrinho.add');
+Route::get('/cardapio',                      [CardapioController::class, 'obterCardapioCompleto']) ->name('cardapio.index');
+Route::get('/cardapio/categoria/{categoria}',[CardapioController::class, 'obterCardapioCategoria'])->name('cardapio.categoria');
+Route::get('/cardapio/adicional/{produto}',  [CardapioController::class, 'obterAdicionalProduto']) ->name('cardapio.produto.adicional');
+Route::post('/cardapio/adicionar/{produto}', [CardapioController::class, 'adicionarItemCarrinho']) ->name('cardapio.carrinho.adicionar');
+Route::get('/cardapio/revisao',              [CardapioController::class, 'revisao'])               ->name('cardapio.revisao');
+Route::get('/cardapio/conta',                [CardapioController::class, 'conta'])                 ->name('cardapio.conta');
+
+Route::post('/cardapio/confirmar',           [CardapioController::class, 'confirmar'])             ->name('cardapio.confirmar');
+Route::post('/cardapio/finalizar',           [CardapioController::class, 'finalizar'])             ->name('pedido.finalizar');
+
 
 Route::middleware(['auth'])->group(function () {
   Route::get('/cozinha', [CozinhaController::class, 'index'])->name('cozinha.index');

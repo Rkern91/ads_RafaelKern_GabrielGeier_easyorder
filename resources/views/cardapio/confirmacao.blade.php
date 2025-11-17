@@ -16,16 +16,11 @@
             <div class="p-4 text-sm uppercase tracking-wide text-gray-300">Produtos</div>
             <nav class="px-2 space-y-1">
                 @foreach($categorias as $c)
-                    <a href="{{ route('cardapio.categoria', ['categoria'=>$c->cd_categoria, 'mesa'=>$mesa]) }}"
+                    <a href="{{ route('cardapio.categoria', ['categoria'=>$c->cd_categoria]) }}"
                        class="block px-3 py-2 rounded hover:bg-white/10">
                         {{ $c->nm_categoria }}
                     </a>
                 @endforeach
-            </nav>
-            <div class="p-4 text-sm uppercase tracking-wide text-gray-300">Adicional</div>
-            <nav class="px-2 pb-4">
-                <a href="{{ route('cardapio.adicionais', ['mesa'=>$mesa]) }}"
-                   class="block px-3 py-2 rounded hover:bg-white/10">Adicionais</a>
             </nav>
         </aside>
 
@@ -114,7 +109,7 @@
                             </div>
 
                             <div class="mt-6 flex justify-center gap-3">
-                                <a href="{{ route('cardapio.index', ['mesa'=>$cart['mesa'], 'restore'=>1]) }}"
+                                <a href="{{ route('cardapio.index', ['mesa'=>1, 'restore'=>1]) }}"
                                    class="px-6 py-2 rounded bg-gray-500 text-black hover:opacity-90 transition"
                                    style="color:white;">
                                     Alterar
