@@ -15,7 +15,8 @@
 
                         <div class="col-span-2 mb-2">
                             <label class="block mb-1 text-sm text-white">Cidade</label>
-                            <input style="color: black;" name="nm_cidade"
+                            <input name="nm_cidade"
+                                   placeholder="Cidade"
                                    value="{{ old('nm_cidade', optional($endereco)->nm_cidade) }}"
                                    class="w-full rounded bg-black text-white placeholder-gray-400 border border-white/20 focus:border-white/40 focus:ring-0 p-2">
                             @error('nm_cidade')
@@ -25,7 +26,7 @@
                         <div class="col-span-2 mb-2">
                             <label class="block mb-1 text-sm text-white">UF</label>
                             @php($ufs = ['AC','AL','AP','AM','BA','CE','DF','ES','GO','MA','MT','MS','MG','PA','PB','PR','PE','PI','RJ','RN','RS','RO','RR','SC','SP','SE','TO'])
-                            <select style="color: black;" name="nm_uf"
+                            <select name="nm_uf"
                                     class="w-full rounded bg-black text-white border border-white/20 focus:border-white/40 focus:ring-0 p-2">
                                 <option value="">Selecione</option>
                                 @foreach($ufs as $uf)
@@ -38,7 +39,8 @@
 
                         <div class="col-span-2 mb-2">
                             <label class="block mb-1 text-sm text-white">Bairro</label>
-                            <input style="color: black;" name="nm_bairro"
+                            <input name="nm_bairro"
+                                   placeholder="Bairro"
                                    value="{{ old('nm_bairro', optional($endereco)->nm_bairro) }}"
                                    class="w-full rounded bg-black text-white placeholder-gray-400 border border-white/20 focus:border-white/40 focus:ring-0 p-2">
                             @error('nm_bairro')
@@ -47,7 +49,7 @@
 
                         <div class="col-span-2 mb-2">
                             <label class="block mb-1 text-sm text-white">Logradouro</label>
-                            <input style="color: black;" name="nm_logradouro"
+                            <input placeholder="Logradouro" name="nm_logradouro"
                                    value="{{ old('nm_logradouro', optional($endereco)->nm_logradouro) }}"
                                    class="w-full rounded bg-black text-white placeholder-gray-400 border border-white/20 focus:border-white/40 focus:ring-0 p-2">
                             @error('nm_logradouro')
@@ -56,7 +58,7 @@
 
                         <div class="col-span-2 mb-2">
                             <label class="block mb-1 text-sm text-white">CEP</label>
-                            <input style="color: black;" type="text" name="nr_cep"
+                            <input type="text" name="nr_cep"
                                    value="{{ old('nr_cep', optional($endereco)->nr_cep) }}" pattern="\d{5}-?\d{3}"
                                    maxlength="9" inputmode="text" placeholder="00000-000"
                                    class="w-full rounded bg-black text-white placeholder-gray-400 border border-white/20 focus:border-white/40 focus:ring-0 p-2">
@@ -66,7 +68,7 @@
 
                         <div class="col-span-2 mb-2">
                             <label class="block mb-1 text-sm text-white">Número</label>
-                            <input style="color: black;" type="number" name="nr_endereco"
+                            <input type="number" name="nr_endereco"
                                    value="{{ old('nr_endereco', optional($endereco)->nr_endereco) }}"
                                    class="w-full rounded bg-black text-white border border-white/20 focus:border-white/40 focus:ring-0 p-2">
                             @error('nr_endereco')
@@ -75,7 +77,7 @@
 
                         <div class="col-span-2 mb-2">
                             <label class="block mb-1 text-sm text-white">Complemento</label>
-                            <input style="color: black;" name="ds_complemento"
+                            <input name="ds_complemento"
                                    value="{{ old('ds_complemento', optional($endereco)->ds_complemento) }}"
                                    class="w-full rounded bg-black text-white placeholder-gray-400 border border-white/20 focus:border-white/40 focus:ring-0 p-2">
                             @error('ds_complemento')
@@ -87,7 +89,7 @@
                                class="px-5 py-2 rounded bg-white text-black hover:opacity-90 transition"
                                style="background-color: gray">Voltar</a>
                             <button class="px-5 py-2 rounded bg-white text-black hover:opacity-90 transition"
-                                    type="submit" style="color: black">Salvar
+                                    type="submit" style="color: black; background-color:white">Salvar
                             </button>
                         </div>
                     </form>

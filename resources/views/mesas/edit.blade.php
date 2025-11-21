@@ -14,7 +14,7 @@
                         @method('PUT')
                         <div>
                             <label for="nm_mesa" class="block text-sm mb-2 text-white">Nome da mesa</label>
-                            <input id="nm_mesa" style="color: black;" name="nm_mesa"
+                            <input id="nm_mesa" name="nm_mesa"
                                    value="{{ old('nm_mesa', $mesa->nm_mesa) }}" placeholder="Ex: Mesa 01, Vip 2..."
                                    class="w-full rounded bg-black text-white placeholder-gray-400 border border-white/20 focus:border-white/40 focus:ring-0 p-2.5">
                             @error('nm_mesa')
@@ -25,7 +25,7 @@
 
                     <div class="flex justify-center gap-4 pt-6">
                         <a href="{{ route('mesas.index') }}"
-                           class="px-5 py-2 rounded bg-white text-black hover:opacity-90 transition"
+                           class="px-5 py-2 rounded bg-white text-white hover:opacity-90 transition"
                            style="background-color: gray;">Voltar</a>
                         <button type="submit" form="formUpdateMesa"
                                 class="px-5 py-2 rounded bg-white text-black hover:opacity-90 transition"

@@ -13,8 +13,7 @@
                             <input name="q" value="{{ $q }}" placeholder="Buscar por nome"
                                    class="rounded bg-black text-white placeholder-gray-400 border border-white/20 focus:border-white/40 focus:ring-0">
                             <select name="cd_categoria"
-                                    class="rounded bg-black text-white border border-white/20 focus:border-white/40 focus:ring-0"
-                                    style="color:black;">
+                                    class="rounded bg-black text-white border border-white/20 focus:border-white/40 focus:ring-0">
                                 <option value="">Todas categorias</option>
                                 @foreach($categorias as $c)
                                     <option value="{{ $c->cd_categoria }}" @selected($cat==$c->cd_categoria)>{{ $c->nm_categoria }}</option>

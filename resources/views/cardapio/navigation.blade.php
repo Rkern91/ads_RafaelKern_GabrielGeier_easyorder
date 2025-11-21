@@ -1,5 +1,7 @@
-<nav x-data="{ open: false }" style="background-color: black;"
-     class="bg-white dark:bg-gray-800 border-b dark:border-gray-700">
+<nav x-data="{ open: false }"
+     style="background-color: black;"
+     class="fixed top-0 left-0 w-full z-50 bg-black
+            dark:bg-gray-800 border-b dark:border-gray-700 mb-8">
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16">
@@ -28,7 +30,7 @@
 
             <!-- DIREITA: Novos links -->
             <div class="hidden sm:flex items-center space-x-8">
-                <x-nav-link href="{{ route('cardapio.revisao') }}">
+                <x-nav-link href="{{ route('cardapio.revisao') }}" :active="request()->routeIs('cardapio.revisao')">
                     🛒 Carrinho
                 </x-nav-link>
 

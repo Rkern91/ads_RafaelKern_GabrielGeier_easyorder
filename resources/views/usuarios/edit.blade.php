@@ -14,7 +14,7 @@
 
                         <div class="sm:col-span-2 mb-2">
                             <label class="block mb-1 text-sm text-white">Nome</label>
-                            <input style="color: black;" name="nm_pessoa"
+                            <input name="nm_pessoa"
                                    value="{{ old('nm_pessoa', $usuario->nm_pessoa) }}"
                                    class="w-full rounded bg-black text-white placeholder-gray-400 border border-white/20 focus:border-white/40 focus:ring-0 p-2.5">
                             @error('nm_pessoa')
@@ -23,7 +23,7 @@
 
                         <div class="sm:col-span-2 mb-2">
                             <label class="block mb-1 text-sm text-white">Apelido</label>
-                            <input style="color: black;" name="ds_apelido"
+                            <input name="ds_apelido"
                                    value="{{ old('ds_apelido', $usuario->ds_apelido) }}"
                                    class="w-full rounded bg-black text-white placeholder-gray-400 border border-white/20 focus:border-white/40 focus:ring-0 p-2.5">
                             @error('ds_apelido')
@@ -32,7 +32,7 @@
 
                         <div class="sm:col-span-2 mb-2">
                             <label class="block mb-1 text-sm text-white">CPF/CNPJ</label>
-                            <input style="color: black;" name="nr_cpf_cnpj"
+                            <input name="nr_cpf_cnpj"
                                    value="{{ old('nr_cpf_cnpj', $usuario->nr_cpf_cnpj) }}" maxlength="14"
                                    class="w-full rounded bg-black text-white border border-white/20 focus:border-white/40 focus:ring-0 p-2.5">
                             @error('nr_cpf_cnpj')
@@ -41,7 +41,7 @@
 
                         <div class="sm:col-span-2 mb-2">
                             <label class="block mb-1 text-sm text-white">E-mail</label>
-                            <input style="color: black;" type="email" name="ds_email"
+                            <input type="email" name="ds_email"
                                    value="{{ old('ds_email', $usuario->ds_email) }}"
                                    class="w-full rounded bg-black text-white placeholder-gray-400 border border-white/20 focus:border-white/40 focus:ring-0 p-2.5">
                             @error('ds_email')
@@ -50,7 +50,7 @@
 
                         <div class="sm:col-span-2 mb-2">
                             <label class="block mb-1 text-sm text-white">Senha</label>
-                            <input style="color: black;" type="password" name="ds_senha" maxlength="20"
+                            <input type="password" name="ds_senha" maxlength="20"
                                    placeholder="Deixe em branco para manter"
                                    class="w-full rounded bg-black text-white border border-white/20 focus:border-white/40 focus:ring-0 p-2.5">
                             @error('ds_senha')
@@ -59,7 +59,7 @@
 
                         <div class="sm:col-span-2 mb-2">
                             <label class="block mb-1 text-sm text-white">Cargo</label>
-                            <select style="color: black;" name="ds_cargo"
+                            <select name="ds_cargo"
                                     class="w-full rounded bg-black text-white border border-white/20 focus:border-white/40 focus:ring-0 p-2.5">
                                 <option value="cozinha" @selected(old('ds_cargo', $usuario->ds_cargo ?? '')==='cozinha')>
                                     Cozinha

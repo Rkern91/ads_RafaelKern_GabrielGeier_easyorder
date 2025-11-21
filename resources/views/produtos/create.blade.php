@@ -14,7 +14,7 @@
 
                         <div>
                             <label for="cd_categoria" class="block text-sm mb-2 text-white">Categoria</label>
-                            <select id="cd_categoria" name="cd_categoria" style="color: black;"
+                            <select id="cd_categoria" name="cd_categoria"
                                     class="w-full rounded bg-black text-white border border-white/20 focus:border-white/40 focus:ring-0 p-2.5">
                                 <option value="">Selecione</option>
                                 @foreach($categorias as $c)
@@ -27,7 +27,7 @@
 
                         <div>
                             <label for="nm_produto" class="block text-sm mb-2 text-white">Nome</label>
-                            <input id="nm_produto" name="nm_produto" style="color: black;"
+                            <input id="nm_produto" name="nm_produto"
                                    value="{{ old('nm_produto') }}"
                                    class="w-full rounded bg-black text-white placeholder-gray-400 border border-white/20 focus:border-white/40 focus:ring-0 p-2.5">
                             @error('nm_produto')
@@ -36,7 +36,7 @@
 
                         <div>
                             <label for="vl_valor" class="block text-sm mb-2 text-white">Valor</label>
-                            <input id="vl_valor" type="number" name="vl_valor" style="color: black;"
+                            <input id="vl_valor" type="number" name="vl_valor"
                                    value="{{ old('vl_valor') }}" step="0.01" min="0"
                                    class="w-full rounded bg-black text-white border border-white/20 focus:border-white/40 focus:ring-0 p-2.5">
                             @error('vl_valor')
@@ -45,7 +45,7 @@
 
                         <div>
                             <label for="ds_produto" class="block text-sm mb-2 text-white">Descrição</label>
-                            <input id="ds_produto" name="ds_produto" style="color: black;"
+                            <input id="ds_produto" name="ds_produto"
                                    value="{{ old('ds_produto') }}"
                                    class="w-full rounded bg-black text-white placeholder-gray-400 border border-white/20 focus:border-white/40 focus:ring-0 p-2.5">
                             @error('ds_produto')
@@ -64,7 +64,7 @@
                     <div class="flex justify-center gap-4 pt-6">
                         <a href="{{ route('produtos.index') }}" style="background-color: gray;"
                            class="px-5 py-2 rounded bg-white text-black hover:opacity-90 transition">Voltar</a>
-                        <button type="submit" form="formCreateProduto" style="color: black;"
+                        <button type="submit" form="formCreateProduto"
                                 class="px-5 py-2 rounded bg-white text-black hover:opacity-90 transition">Salvar
                         </button>
                     </div>

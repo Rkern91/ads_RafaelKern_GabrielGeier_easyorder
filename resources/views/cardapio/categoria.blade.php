@@ -1,3 +1,6 @@
+<div class="min-w-full pt-6 mt-5">
+    --
+</div>
 <div class="min-w-full">
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
         @foreach($produtos as $produto)

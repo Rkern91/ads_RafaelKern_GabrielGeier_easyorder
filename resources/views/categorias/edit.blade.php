@@ -15,7 +15,7 @@
                         @method('PUT')
                         <div>
                             <label for="nm_categoria" class="block text-sm mb-2 text-white">Nome da categoria</label>
-                            <input id="nm_categoria" name="nm_categoria" style="color: black;"
+                            <input id="nm_categoria" name="nm_categoria"
                                    value="{{ old('nm_categoria', $categoria->nm_categoria) }}"
                                    placeholder="Ex: Bebidas, Comidas, Sobremesas..."
                                    class="w-full rounded bg-black text-white placeholder-gray-400 border border-white/20 focus:border-white/40 focus:ring-0 p-2.5">
@@ -25,7 +25,7 @@
                         </div>
                         <div class="flex justify-center gap-4 pt-6">
                             <a href="{{ route('categorias.index') }}"
-                               class="px-5 py-2 rounded bg-white text-black hover:opacity-90 transition"
+                               class="px-5 py-2 rounded bg-white text-white hover:opacity-90 transition"
                                style="background-color: gray;">Voltar</a>
                             <button type="submit"
                                     class="px-5 py-2 rounded bg-green-600 text-white hover:opacity-90 transition"

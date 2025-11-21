@@ -14,7 +14,7 @@
                         @csrf
                         <div>
                             <label for="nm_categoria" class="block text-sm mb-2 text-white">Nome da categoria</label>
-                            <input id="nm_categoria" name="nm_categoria" style="color: black;"
+                            <input id="nm_categoria" name="nm_categoria"
                                    value="{{ old('nm_categoria') }}" placeholder="Ex: Bebidas, Comidas, Sobremesas..."
                                    class="w-full rounded bg-black text-white placeholder-gray-400 border border-white/20 focus:border-white/40 focus:ring-0 p-2.5">
                             @error('nm_categoria')

@@ -15,13 +15,23 @@ class CardapioController extends Controller
   /**
    * @return \Illuminate\Contracts\View\Factory|View
    */
-  public function obterCardapioCompleto()
+  public function obterCardapioCompleto($idReturnSucess = false)
   {
     session(["mesa" => 1]);
     
     $categorias         = ProdutoCategoria::orderBy('nm_categoria')->get();
     $id_categoria_ativa = $categorias[0]->cd_categoria;
     $produtos           = Produto::where('cd_categoria', $id_categoria_ativa)->orderBy('nm_produto')->get();
+    
+    if ($idReturnSucess)
+      return view(
+        'cardapio.index',
+        compact(
+          'categorias',
+          'id_categoria_ativa',
+          'produtos'
+        )
+      )->with('success', 'Produto adicionado ao carrinho!');
     
     return view(
       'cardapio.index',
@@ -138,9 +148,9 @@ class CardapioController extends Controller
     
     if (isset($carrinhoSession["arrMesa"]) && count($carrinhoSession["arrMesa"][$cdMesa]["arrProdutos"]))
     {
-      foreach ($carrinhoSession["arrMesa"][$cdMesa]["arrProdutos"] as $cdProduto => $arrDadosProduto)
+      foreach ($carrinhoSession["arrMesa"][$cdMesa]["arrProdutos"] as $arrDadosProduto)
       {
-        $Produto            = Produto::where('cd_produto', $cdProduto)->get()[0];
+        $Produto            = Produto::where('cd_produto', $arrDadosProduto["cd_produto"])->get()->first();
         $subTotalGeral     += $Produto->vl_valor;
         $arrDadosAdicionais = [];
         
@@ -169,11 +179,16 @@ class CardapioController extends Controller
       }
     }
     
+    $categorias         = ProdutoCategoria::orderBy('nm_categoria')->get();
+    $id_categoria_ativa = false;
+    
     return view(
       "cardapio.carrinho-preview",
       compact([
         "carrinhoProdutos",
         "subTotalGeral",
+        'categorias',
+        'id_categoria_ativa'
       ])
     );
   }
@@ -253,24 +268,19 @@ class CardapioController extends Controller
   
   public function adicionarItemCarrinho(Produto $Produto, Request $request)
   {
-    $cdMesa = session("mesa");
-    $cart   = session("carrinho_preview");
+    $cdMesa          = session("mesa");
+    $cart            = session("carrinho_preview");
+    $arrIdAdicionais = $request->get('adicionais') != null ? $request->get('adicionais') : [];
     
-    if (!isset($cart["arrMesa"][$cdMesa]))
-      $cart["arrMesa"][$cdMesa]["arrProdutos"][$Produto->cd_produto] = [];
-    
-    if (!isset($cart["arrMesa"][$cdMesa]["arrProdutos"][$Produto->cd_produto]))
-      $cart["arrMesa"][$cdMesa]["arrProdutos"][$Produto->cd_produto] = [];
-    
-    if ($request->get('adicionais') !== null)
-    {
-      $arrIdAdicionais = $request->get('adicionais');
-      $cart["arrMesa"][session("mesa")]["arrProdutos"][$Produto->cd_produto]["arrCdAdicionais"] = $arrIdAdicionais;
-    }
+    $cart["arrMesa"][$cdMesa]["arrProdutos"][] = [
+      "cd_produto"      => $Produto->cd_produto,
+      "nm_produto"      => $Produto->nm_produto,
+      "arrCdAdicionais" => $arrIdAdicionais
+    ];
     
     session(["carrinho_preview" => $cart]);
     
-    return $this->obterCardapioCompleto();
+    return $this->obterCardapioCompleto(true);
   }
 
   public function obterAdicionalProduto(Produto $produto, Request $request)

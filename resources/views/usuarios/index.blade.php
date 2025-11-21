@@ -13,8 +13,7 @@
                             <input name="q" value="{{ $q }}" placeholder="Buscar por nome, e-mail, apelido ou CPF/CNPJ"
                                    class="rounded bg-black text-white placeholder-gray-400 border border-white/20 focus:border-white/40 focus:ring-0">
                             <select name="ds_cargo"
-                                    class="rounded bg-black text-white border border-white/20 focus:border-white/40 focus:ring-0"
-                                    style="color:black;">
+                                    class="rounded bg-black text-white border border-white/20 focus:border-white/40 focus:ring-0">
                                 <option value="">Todos os cargos</option>
                                 <option value="cozinha" @selected($cargo==='cozinha')>Cozinha</option>
                                 <option value="adm" @selected($cargo==='adm')>ADM</option>

@@ -1,7 +1,9 @@
 <x-public-layout>
-
+    @include('cardapio.navigation')
+    <div class="min-w-full pt-6 mt-10">
+        --
+    </div>
     <div class="relative min-h-screen p-4 md:p-6">
-
         <div class="flex justify-center">
             <div class="inline-block bg-black text-white border border-white/20 rounded-lg p-5 w-full"
                  style="background-color:#0f0f0f; max-width:900px;">
@@ -10,29 +12,24 @@
                     Revisão do seu Carrinho
                 </h1>
 
-                @php
-                    // Estrutura esperada:
-                    // $carrinho = [
-                    //   ['produto' => [...], 'adicionais' => [...], 'subtotal' => 00.00],
-                    //   ...
-                    // ]
-                @endphp
-
                 @if(empty($carrinhoProdutos))
                     <div class="text-center text-gray-300">Seu carrinho está vazio.</div>
-                    <a href="{{ route('cardapio.index') }}"
-                       class="px-5 py-2 rounded bg-white text-black hover:opacity-90 transition"
-                       style="background-color: gray;">Voltar ao menu</a>
+                    <div class="text-center mt-4">
+                        <a href="{{ route('cardapio.index') }}"
+                           class="inline-block px-5 py-2 rounded bg-gray-500 text-white hover:opacity-90 transition">
+                            Voltar ao menu
+                        </a>
+                    </div>
                 @else
 
                     <div class="space-y-4">
 
                         @foreach($carrinhoProdutos as $arrProduto)
                             @php
-                                $cdProduto    = $arrProduto['cd_produto'];
-                                $nmProduto    = $arrProduto['nm_produto'];
-                                $dsProduto    = $arrProduto['ds_produto'];
-                                $vlProduto    = $arrProduto['vl_produto'];
+                                $cdProduto          = $arrProduto['cd_produto'];
+                                $nmProduto          = $arrProduto['nm_produto'];
+                                $dsProduto          = $arrProduto['ds_produto'];
+                                $vlProduto          = $arrProduto['vl_produto'];
                                 $arrDadosAdicionais = $arrProduto['adicionais'];
                             @endphp
 
@@ -77,7 +74,6 @@
 
                                 </div>
 
-                                {{-- Lado direito: botões --}}
                                 <div class="flex flex-col justify-between items-end gap-2">
 
                                     <a {{-- href="{{ route('cardapio.carrinho.editar', ['Produto' => $arrProduto]) }}"
@@ -98,19 +94,15 @@
 
                                 </div>
 
-                                                        {{-- Observação --}}
+                    {{-- Observação --}}
                     <form method="post" action="{{ route('cardapio.confirmar') }}">
                         @csrf
 
                         <div class="mt-8">
-                            <div class="text-sm uppercase tracking-wide text-gray-300 mb-2">
+                            <div class="text-sm uppercase tracking-wide text-white mb-2 mt-6">
                                 Observações do pedido (opcional)
                             </div>
-                            <textarea name="obs" rows="4"
-                                      class="w-full rounded bg-black border border-white/20 p-3 text-white"
-                                      placeholder="Alguma solicitação especial?">
-                                {{ old('obs', $obs ?? '') }}
-                            </textarea>
+                            <textarea name="obs" rows="4" class="w-full rounded bg-black border border-white/20 p-3 text-white" placeholder="Alguma obserção especial?"></textarea>
                         </div>
 
                         {{-- Total --}}
