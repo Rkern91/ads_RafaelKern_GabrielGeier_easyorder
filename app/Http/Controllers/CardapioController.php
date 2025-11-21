@@ -139,7 +139,7 @@ class CardapioController extends Controller
     return redirect()->route('cardapio.revisao');
   }
 
-  public function revisao(Request $request)
+  public function revisao()
   {
     $carrinhoSession  = session('carrinho_preview');
     $cdMesa           = session("mesa");
@@ -148,7 +148,7 @@ class CardapioController extends Controller
     
     if (isset($carrinhoSession["arrMesa"]) && count($carrinhoSession["arrMesa"][$cdMesa]["arrProdutos"]))
     {
-      foreach ($carrinhoSession["arrMesa"][$cdMesa]["arrProdutos"] as $arrDadosProduto)
+      foreach ($carrinhoSession["arrMesa"][$cdMesa]["arrProdutos"] as $index => $arrDadosProduto)
       {
         $Produto            = Produto::where('cd_produto', $arrDadosProduto["cd_produto"])->get()->first();
         $subTotalGeral     += $Produto->vl_valor;
@@ -162,19 +162,14 @@ class CardapioController extends Controller
             $subTotalGeral += $Adicional->vl_adicional;
             
             $arrDadosAdicionais[] = [
-              "cd_adicional" => $Adicional->cd_adicional,
-              "nm_adicional" => $Adicional->nm_adicional,
-              "vl_adicional" => $Adicional->vl_adicional
+              "obj_adicional" => $Adicional
             ];
           }
         }
 
-        $carrinhoProdutos[] = [
-          "cd_produto"    => $Produto->cd_produto,
-          "nm_produto"    => $Produto->nm_produto,
-          "vl_produto"    => $Produto->vl_valor,
-          "ds_produto"    => $Produto->ds_produto,
-          "adicionais"    => $arrDadosAdicionais
+        $carrinhoProdutos[$index] = [
+          "obj_produto"    => $Produto,
+          "arr_adicionais" => $arrDadosAdicionais
         ];
       }
     }
@@ -281,6 +276,18 @@ class CardapioController extends Controller
     session(["carrinho_preview" => $cart]);
     
     return $this->obterCardapioCompleto(true);
+  }
+  
+  public function removerItemCarrinho($index)
+  {
+    $cdMesa = session("mesa");
+    $cart   = session("carrinho_preview");
+    
+    unset($cart["arrMesa"][$cdMesa]["arrProdutos"][$index]);
+    
+    session(["carrinho_preview" => $cart]);
+    
+    return $this->revisao();
   }
 
   public function obterAdicionalProduto(Produto $produto, Request $request)

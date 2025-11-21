@@ -24,13 +24,10 @@
 
                     <div class="space-y-4">
 
-                        @foreach($carrinhoProdutos as $arrProduto)
+                        @foreach($carrinhoProdutos as $index => $arrItem)
                             @php
-                                $cdProduto          = $arrProduto['cd_produto'];
-                                $nmProduto          = $arrProduto['nm_produto'];
-                                $dsProduto          = $arrProduto['ds_produto'];
-                                $vlProduto          = $arrProduto['vl_produto'];
-                                $arrDadosAdicionais = $arrProduto['adicionais'];
+                                $Produto       = $arrItem["obj_produto"];
+                                $arrAdicionais = $arrItem['arr_adicionais'];
                             @endphp
 
                             <div class="border border-white/10 rounded p-4 flex justify-between gap-4"
@@ -41,31 +38,35 @@
 
                                     {{-- Produto --}}
                                     <div class="font-semibold text-lg">
-                                        {{ $nmProduto }}
+                                        {{ $Produto->nm_produto }}
                                     </div>
 
-                                    @if(!empty($dsProduto))
+                                    @if(!empty($Produto->ds_produto))
                                         <div class="text-sm text-gray-300 mt-1 leading-tight">
-                                            {{ $dsProduto }}
+                                            {{ $Produto->ds_produto }}
                                         </div>
                                     @endif
 
                                     <div class="mt-2 font-semibold" style="color: green;">
-                                        R$ {{ number_format($vlProduto, 2, ',', '.') }}
+                                        R$ {{ number_format($Produto->vl_valor, 2, ',', '.') }}
                                     </div>
 
                                     {{-- Adicionais do produto --}}
-                                    @if(!empty($arrDadosAdicionais))
+                                    @if(!empty($arrAdicionais))
                                         <div class="mt-4 text-sm uppercase tracking-wide text-gray-400">
                                             Adicionais
                                         </div>
 
                                         <div class="mt-1 space-y-1">
-                                            @foreach($arrDadosAdicionais as $arrAdicional)
+                                            @foreach($arrAdicionais as $arrAdicional)
+                                                @php
+                                                  $Adicional = $arrAdicional["obj_adicional"]
+                                                @endphp
+
                                                 <div class="flex justify-between text-sm border border-white/10 rounded p-2">
-                                                    <div>{{ $arrAdicional['nm_adicional'] }}</div>
+                                                    <div>{{ $Adicional->nm_adicional }}</div>
                                                     <div style="color: green;">
-                                                        R$ {{ number_format($arrAdicional['vl_adicional'], 2, ',', '.') }}
+                                                        R$ {{ number_format($Adicional->vl_adicional, 2, ',', '.') }}
                                                     </div>
                                                 </div>
                                             @endforeach
@@ -80,7 +81,7 @@
                                        class="px-3 py-1 text-white rounded bg-blue-600 hover:opacity-80 transition text-sm" --}}>
                                         Editar
                                     </a>
-                                                <form method="post" {{-- action="{{ route('cardapio.carrinho.remover', ['Produto' => $arrProduto])" --}}>
+                                                <form method="post" action="{{ route('cardapio.carrinho.remover', ['index' => $index]) }}">
                                                     @csrf
                                                     <button class="px-3 py-1 text-white rounded bg-red-600 hover:opacity-80 transition text-sm">
                                                         Remover

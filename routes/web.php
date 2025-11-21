@@ -65,6 +65,7 @@ Route::get('/cardapio',                      [CardapioController::class, 'obterC
 Route::get('/cardapio/categoria/{categoria}',[CardapioController::class, 'obterCardapioCategoria'])->name('cardapio.categoria');
 Route::get('/cardapio/adicional/{produto}',  [CardapioController::class, 'obterAdicionalProduto']) ->name('cardapio.produto.adicional');
 Route::post('/cardapio/adicionar/{produto}', [CardapioController::class, 'adicionarItemCarrinho']) ->name('cardapio.carrinho.adicionar');
+Route::post('/cardapio/remover/{index}',     [CardapioController::class, 'removerItemCarrinho'])   ->name('cardapio.carrinho.remover');
 Route::get('/cardapio/revisao',              [CardapioController::class, 'revisao'])               ->name('cardapio.revisao');
 Route::get('/cardapio/conta',                [CardapioController::class, 'conta'])                 ->name('cardapio.conta');
 
