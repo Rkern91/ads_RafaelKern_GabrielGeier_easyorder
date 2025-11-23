@@ -15,16 +15,32 @@
                         Nenhum adicional disponível para este produto.
                     </div>
                 @else
-                    <form method="post" action="{{ route('cardapio.carrinho.adicionar', ['produto' => $Produto]) }}">
+                    @php
+                      $nmRota           = "cardapio.carrinho.adicionar";
+                      $arrParams        = ["produto" => $Produto];
+                      $dsLabelBtnSubmit = "Adicionar ao Carrinho";
+
+                      if (isset($index))
+                      {
+                        $nmRota           = "cardapio.carrinho.alterar";
+                        $arrParams        = ["index" => $index];
+                        $dsLabelBtnSubmit = "Atualizar Carrinho";
+                      }
+                    @endphp
+                    <form method="post" action="{{ route($nmRota, $arrParams) }}">
                         @csrf
                         <div class="space-y-3">
                             @foreach($Adicionais as $a)
                                 <label class="flex items-start justify-between border border-white/10 rounded p-3 cursor-pointer hover:bg-white/5"
                                        style="background-color:#0f0f0f;">
                                     <div class="flex items-start gap-3">
+                                        @php
+                                            $isChecked = isset($selectedAdds) && in_array($a->cd_adicional, $selectedAdds);
+                                        @endphp
                                         <input type="checkbox"
                                                name="adicionais[]"
                                                value="{{ $a->cd_adicional }}"
+                                               @checked($isChecked)
                                                class="mt-1 h-5 w-5 rounded border-gray-400 bg-black focus:ring-white">
 
                                         <div>
@@ -51,7 +67,7 @@
                         <div class="mt-6 flex justify-center gap-4">
                             <button class="px-6 py-2 rounded text-white hover:opacity-90 transition"
                                     style="background-color: darkgreen;">
-                                Adicionar ao Carrinho
+                            {{$dsLabelBtnSubmit}}
                             </button>
                             <a href="{{ route('cardapio.index') }}"
                             class="px-5 py-2 rounded bg-white text-black hover:opacity-90 transition"

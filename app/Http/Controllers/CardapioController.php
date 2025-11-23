@@ -15,23 +15,13 @@ class CardapioController extends Controller
   /**
    * @return \Illuminate\Contracts\View\Factory|View
    */
-  public function obterCardapioCompleto($idReturnSucess = false)
+  public function obterCardapioCompleto()
   {
     session(["mesa" => 1]);
     
     $categorias         = ProdutoCategoria::orderBy('nm_categoria')->get();
     $id_categoria_ativa = $categorias[0]->cd_categoria;
     $produtos           = Produto::where('cd_categoria', $id_categoria_ativa)->orderBy('nm_produto')->get();
-    
-    if ($idReturnSucess)
-      return view(
-        'cardapio.index',
-        compact(
-          'categorias',
-          'id_categoria_ativa',
-          'produtos'
-        )
-      )->with('success', 'Produto adicionado ao carrinho!');
     
     return view(
       'cardapio.index',
@@ -64,82 +54,12 @@ class CardapioController extends Controller
     );
   }
 
-  public function adicionais(Request $request)
+  public function confirmarEnviarPedido(Request $request)
   {
-    $categorias = ProdutoCategoria::orderBy('nm_categoria')->get();
-    $adicionais = Adicional::orderBy('nm_adicional')->get();
-    return view('cardapio.index', [ // <-
-      'categorias' => $categorias,
-      'modo' => 'adicional',
-      'titulo' => 'Adicionais',
-      'itens' => $adicionais,
-      'mesa' => $request->query('mesa'),
-    ]);
+    //TODO: Ajustar método de confirmação do pedido
   }
 
-  public function confirmar(Request $request)
-  {
-    $mesa = $request->input('mesa');
-    $obs = trim((string)$request->input('obs'));
-    $payload = json_decode($request->input('payload', '{}'), true) ?: [];
-
-    $prodSel = collect($payload['produtos'] ?? []);
-    $adiSel = collect($payload['adicionais'] ?? []);
-
-    $produtos = Produto::whereIn('cd_produto', $prodSel->pluck('id'))->get()->keyBy('cd_produto');
-    $adicionais = Adicional::whereIn('cd_adicional', $adiSel->pluck('id'))->get()->keyBy('cd_adicional');
-
-    $itensProdutos = $prodSel->map(function ($p) use ($produtos) {
-      $m = $produtos[$p['id']] ?? null;
-      if (!$m) return null;
-      $q = (int)$p['qtd'];
-      $vl = (float)$m->vl_valor;
-      return [
-        'id' => (int)$m->cd_produto,
-        'nome' => $m->nm_produto,
-        'qtd' => $q,
-        'preco' => $vl,
-        'subtotal' => $q * $vl,
-        'tipo' => 'produto',
-      ];
-    })->filter()->values();
-
-    $itensAdicionais = $adiSel->map(function ($a) use ($adicionais) {
-      $m = $adicionais[$a['id']] ?? null;
-      if (!$m) return null;
-      $q = (int)$a['qtd'];
-      $vl = (float)$m->vl_adicional;
-      return [
-        'id' => (int)$m->cd_adicional,
-        'nome' => $m->nm_adicional,
-        'qtd' => $q,
-        'preco' => $vl,
-        'subtotal' => $q * $vl,
-        'tipo' => 'adicional',
-      ];
-    })->filter()->values();
-
-    $total = $itensProdutos->sum('subtotal') + $itensAdicionais->sum('subtotal');
-
-    session([
-      'carrinho_preview' => [
-        'mesa' => $mesa,
-        'obs' => $obs,
-        'produtos' => $itensProdutos->all(),
-        'adicionais' => $itensAdicionais->all(),
-        'total' => $total,
-        'restore' => [
-          'produtos' => $prodSel->keyBy('id'),
-          'adicionais' => $adiSel->keyBy('id'),
-          'obs' => $obs,
-        ],
-      ],
-    ]);
-
-    return redirect()->route('cardapio.revisao');
-  }
-
-  public function revisao()
+  public function visualizarCarrinhoCompras()
   {
     $carrinhoSession  = session('carrinho_preview');
     $cdMesa           = session("mesa");
@@ -187,79 +107,6 @@ class CardapioController extends Controller
       ])
     );
   }
-
-  public function finalizar()
-  {
-    $cart = session('carrinho_preview');
-    if (!$cart) {
-      return redirect()->route('cardapio.index')->with('error', 'Carrinho vazio.');
-    }
-
-    $mesa = (int)($cart['mesa'] ?? 0);
-    $obs = (string)($cart['obs'] ?? '');
-    $produtos = collect($cart['produtos'] ?? []);   // [id, qtd, preco, subtotal]
-    $adicionais = collect($cart['adicionais'] ?? []); // [id, qtd, preco, subtotal]
-    $total = (float)($cart['total'] ?? 0);
-
-    if ($produtos->isEmpty() && $adicionais->isEmpty()) {
-      return redirect()->route('cardapio.index')->with('error', 'Nenhum item selecionado.');
-    }
-
-    DB::transaction(function () use ($mesa, $total, $obs, $produtos, $adicionais) {
-      $pedidoId = DB::table('pedido')->insertGetId([
-        'cd_mesa' => $mesa ?: null,
-        'vl_pedido' => $total,
-        'dt_pedido' => now(),
-        'id_status' => 0,
-        'ds_observacao' => $obs ?: null, // remova se não criar a coluna
-      ], 'cd_pedido');
-
-      foreach ($produtos as $p) {
-        DB::table('itens_pedido')->insert([
-          'cd_pedido' => $pedidoId,
-          'cd_produto' => (int)$p['id'],
-          'qt_produto' => (int)$p['qtd'],
-        ]);
-      }
-
-      foreach ($adicionais as $a) {
-        $q = (int)$a['qtd'];
-        if ($q < 1) continue;
-        $rows = [];
-        for ($i = 0; $i < $q; $i++) {
-          $rows[] = [
-            'cd_pedido' => $pedidoId,
-            'cd_adicional_pedido' => (int)$a['id'],
-          ];
-        }
-        DB::table('adicionais_pedido')->insert($rows);
-      }
-    });
-
-    session()->forget('carrinho_preview');
-
-    return redirect()->route('cardapio.index', ['mesa' => $mesa])->with('success', 'Pedido enviado com sucesso!');
-  }
-  
-  public function navigation(Request $request)
-  {
-    $categorias = ProdutoCategoria::orderBy('nm_categoria')->get();
-    return view('cardapio.navigation', [
-      'categorias' => $categorias,
-      'mesa' => $request->query('mesa'),
-    ]);
-  }
-  
-  public function adicionaisProduto(Request $request, Produto $produto)
-  {
-    $adicionais = Adicional::orderBy('nm_adicional')->get();
-    
-    return view('cardapio.adicionais', [
-      'produto' => $produto,
-      'adicionais' => $adicionais,
-      'mesa' => $request->query('mesa'),
-    ]);
-  }
   
   public function adicionarItemCarrinho(Produto $Produto, Request $request)
   {
@@ -275,9 +122,22 @@ class CardapioController extends Controller
     
     session(["carrinho_preview" => $cart]);
     
-    return $this->obterCardapioCompleto(true);
+    return $this->obterCardapioCompleto();
   }
   
+  public function alterarAdicionalProduto($index, Request $request)
+  {
+    $cdMesa          = session("mesa");
+    $cart            = session("carrinho_preview");
+    $arrIdAdicionais = $request->get('adicionais') != null ? $request->get('adicionais') : [];
+  
+    $cart["arrMesa"][$cdMesa]["arrProdutos"][$index]["arrCdAdicionais"] = $arrIdAdicionais;
+    
+    session(["carrinho_preview" => $cart]);
+    
+    return $this->obterCardapioCompleto();
+  }
+
   public function removerItemCarrinho($index)
   {
     $cdMesa = session("mesa");
@@ -287,7 +147,7 @@ class CardapioController extends Controller
     
     session(["carrinho_preview" => $cart]);
     
-    return $this->revisao();
+    return $this->visualizarCarrinhoCompras();
   }
 
   public function obterAdicionalProduto(Produto $produto, Request $request)
@@ -303,6 +163,26 @@ class CardapioController extends Controller
       compact(
         'Produto',
         'Adicionais'
+      )
+    );
+  }
+
+  public function editarAdicionalProdutoCarrinho($index)
+  {
+    $cdMesa       = session("mesa");
+    $cart         = session("carrinho_preview");
+    $indexProduto = $cart["arrMesa"][$cdMesa]["arrProdutos"][$index];
+    $selectedAdds = $cart["arrMesa"][$cdMesa]["arrProdutos"][$index]["arrCdAdicionais"];
+    $Produto      = Produto::where("cd_produto", $indexProduto["cd_produto"])->get()->first();
+    $Adicionais   = Adicional::where("cd_categoria", $Produto->cd_categoria)->orderBy("nm_adicional")->get();
+    
+    return view(
+      "cardapio.selecionar-adicional",
+      compact(
+        "Produto",
+        "Adicionais",
+        "selectedAdds",
+        "index"
       )
     );
   }

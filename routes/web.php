@@ -57,21 +57,20 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::middleware('auth')->group(function () {
-  Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+  Route::get('/profile',   [ProfileController::class, 'edit'])  ->name('profile.edit');
   Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
 });
 
-Route::get('/cardapio',                      [CardapioController::class, 'obterCardapioCompleto']) ->name('cardapio.index');
-Route::get('/cardapio/categoria/{categoria}',[CardapioController::class, 'obterCardapioCategoria'])->name('cardapio.categoria');
-Route::get('/cardapio/adicional/{produto}',  [CardapioController::class, 'obterAdicionalProduto']) ->name('cardapio.produto.adicional');
-Route::post('/cardapio/adicionar/{produto}', [CardapioController::class, 'adicionarItemCarrinho']) ->name('cardapio.carrinho.adicionar');
-Route::post('/cardapio/remover/{index}',     [CardapioController::class, 'removerItemCarrinho'])   ->name('cardapio.carrinho.remover');
-Route::get('/cardapio/revisao',              [CardapioController::class, 'revisao'])               ->name('cardapio.revisao');
-Route::get('/cardapio/conta',                [CardapioController::class, 'conta'])                 ->name('cardapio.conta');
-
-Route::post('/cardapio/confirmar',           [CardapioController::class, 'confirmar'])             ->name('cardapio.confirmar');
-Route::post('/cardapio/finalizar',           [CardapioController::class, 'finalizar'])             ->name('pedido.finalizar');
-
+Route::get('/cardapio',                                 [CardapioController::class, 'obterCardapioCompleto'])         ->name('cardapio.index');
+Route::get('/cardapio/categoria/{categoria}',           [CardapioController::class, 'obterCardapioCategoria'])        ->name('cardapio.categoria');
+Route::get('/cardapio/adicional/{produto}',             [CardapioController::class, 'obterAdicionalProduto'])         ->name('cardapio.produto.adicional');
+Route::post('/cardapio/adicionar/{produto}',            [CardapioController::class, 'adicionarItemCarrinho'])         ->name('cardapio.carrinho.adicionar');
+Route::post('/cardapio/remover/{index}',                [CardapioController::class, 'removerItemCarrinho'])           ->name('cardapio.carrinho.remover');
+Route::post('/cardapio/alterarAdicional/{index}',       [CardapioController::class, 'alterarAdicionalProduto'])       ->name('cardapio.carrinho.alterar');
+Route::post('/cardapio/editarAdicionalProduto/{index}', [CardapioController::class, 'editarAdicionalProdutoCarrinho'])->name('cardapio.carrinho.produto.editar');
+Route::get('/cardapio/visualizarCarrinhoCompras',       [CardapioController::class, 'visualizarCarrinhoCompras'])     ->name('cardapio.revisao');
+Route::get('/cardapio/resumoConta',                     [CardapioController::class, 'conta'])                         ->name('cardapio.conta');
+Route::post('/cardapio/enviarPedido',                   [CardapioController::class, 'confirmarEnviarPedido'])         ->name('cardapio.confirmar');
 
 Route::middleware(['auth'])->group(function () {
   Route::get('/cozinha', [CozinhaController::class, 'index'])->name('cozinha.index');

@@ -4,29 +4,22 @@
 <div class="min-w-full">
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
         @foreach($produtos as $produto)
-            <div class="bg-neutral-primary-soft block max-w-sm p-6 border border-default rounded-xl shadow-xs">
-
-                <div class="rounded-base sm:flex flex-1 border border-white/10 mb-4"
-                     style="width:100%; height:160px; background:#000;">
+            <div class="bg-neutral-primary-soft block p-6 border border-default rounded-xl shadow-xs">
+                <div class="max-w-sm bg-white rounded-lg shadow overflow-hidden mb-6">
                     @if(!empty($produto->img_b64) && !empty($produto->img_mime))
                         <img src="data:{{ $produto->img_mime }};base64,{{ $produto->img_b64 }}"
                              alt="{{ $produto->nm_produto }}"
                              class="w-full h-full object-contain">
                     @endif
-                </div>
-
-                <div>
-                  <h5 class="text-white mb-3 text-2xl font-semibold tracking-tight text-heading leading-8">
-                      {{ $produto->nm_produto }}
-                  </h5>
-
-                  <p class="text-white text-body mb-4">
-                      {{ $produto->ds_produto }}
-                  </p>
-                </div>
-
-                <div class="text-xl font-semibold text-green-800 mb-4">
-                    R$ {{ number_format($produto->vl_valor, 2, ',', '.') }}
+                    <div class="p-6">
+                        <div>
+                            <h3 class="text-lg font-semibold mb-1">{{ $produto->nm_produto }}</h3>
+                            <p class="text-gray-600">{{ $produto->ds_produto }}</p>
+                        </div>
+                        <div>
+                            R$ {{ number_format($produto->vl_valor, 2, ',', '.') }}
+                        </div>
+                    </div>
                 </div>
 
                 <a href="{{ route('cardapio.produto.adicional', ['produto' => $produto]) }}" data-type="produto" data-id="{{ $produto->cd_produto }}"
