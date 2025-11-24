@@ -54,7 +54,7 @@
                                 @csrf
                                 <input type="hidden" name="payload" value="{{ $payload }}">
                                 <button class="inline-flex items-center px-4 py-2 rounded text-black hover:opacity-90" style="background-color:darkgreen">
-                                    Simular pagamento (Sandbox)
+                                    Simular pagamento
                                 </button>
                             </form>
                         </div>
