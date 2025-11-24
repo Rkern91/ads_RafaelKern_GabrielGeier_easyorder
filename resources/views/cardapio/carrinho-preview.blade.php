@@ -71,9 +71,8 @@
                                     </form>
                                     <form method="post" action="{{ route('cardapio.carrinho.remover', ['index' => $index]) }}">
                                         @csrf
-                                        <button class="px-3 py-1 text-white rounded bg-red-600 hover:opacity-80 transition text-sm">
-                                            Remover Produto
-                                        </button>
+                                        <button class="px-3 py-1 text-white rounded bg-red-600 hover:opacity-80 transition text-sm"
+                                                data-confirm="Deseja remover este produto?">Remover Produto</button>
                                     </form>
                                 </div>
                             </div>
@@ -101,10 +100,11 @@
                         {{-- Botões --}}
                         <div class="mt-6 flex justify-center gap-4">
                             <button class="px-6 py-2 rounded text-white hover:opacity-90 transition"
-                                    style="background-color: darkgreen;">
+                                    style="background-color: darkgreen;"
+                                    data-confirm="Deseja finalizar alterações e enviar o pedido?">
                                 Confirmar Pedido
                             </button>
-                            <a href="{{ route('cardapio.index') }}"
+                            <a href="{{ route("cardapio.index") }}"
                                class="px-5 py-2 rounded bg-gray-500 text-white hover:opacity-90 transition">
                                 Voltar
                             </a>

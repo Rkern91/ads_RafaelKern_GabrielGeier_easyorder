@@ -5,30 +5,32 @@ namespace App\Http\Controllers;
 use App\Models\Adicional;
 use App\Models\Mesa;
 use App\Models\Produto;
-use App\Models\ProdutoCategoria    as ProdutoCategoria;
-use Illuminate\Contracts\View\View as View;
-use Illuminate\Http\Request        as Request;
+use App\Models\ProdutoCategoria       as ProdutoCategoria;
+use Illuminate\Contracts\View\Factory as FactoryAlias;
+use Illuminate\Contracts\View\View    as ViewAlias;
+use Illuminate\Http\Request           as Request;
 use Illuminate\Support\Facades\DB;
 
 class CardapioController extends Controller
 {
   /**
-   * @return \Illuminate\Contracts\View\Factory|View
+   * @return FactoryAlias|ViewAlias
    */
   public function obterCardapioCompleto()
   {
+    //TODO: Estruturar uma forma mais dinâmica de logar e identificar a mesa
     session(["mesa" => 1]);
     
-    $categorias         = ProdutoCategoria::orderBy('nm_categoria')->get();
+    $categorias         = ProdutoCategoria::orderBy("nm_categoria")->get();
     $id_categoria_ativa = $categorias[0]->cd_categoria;
-    $produtos           = Produto::where('cd_categoria', $id_categoria_ativa)->orderBy('nm_produto')->get();
+    $produtos           = Produto::where("cd_categoria", $id_categoria_ativa)->orderBy("nm_produto")->get();
     
     return view(
-      'cardapio.index',
+      "cardapio.index",
       compact(
-        'categorias',
-        'id_categoria_ativa',
-        'produtos'
+        "categorias",
+        "id_categoria_ativa",
+        "produtos"
       )
     );
   }
@@ -36,20 +38,20 @@ class CardapioController extends Controller
   /**
    * Obtem os produtos de uma categoria para listagem.
    * @param ProdutoCategoria $categoria
-   * @return \Illuminate\Contracts\View\Factory|View
+   * @return FactoryAlias|ViewAlias
    */
   public function obterCardapioCategoria(ProdutoCategoria $categoria)
   {
-    $categorias         = ProdutoCategoria::orderBy('nm_categoria')->get();
+    $categorias         = ProdutoCategoria::orderBy("nm_categoria")->get();
     $id_categoria_ativa = $categoria->cd_categoria;
-    $produtos           = Produto::where('cd_categoria', $id_categoria_ativa)->orderBy('nm_produto')->get();
+    $produtos           = Produto::where("cd_categoria", $id_categoria_ativa)->orderBy("nm_produto")->get();
     
     return view(
-      'cardapio.index',
+      "cardapio.index",
       compact(
-        'categorias',
-        'id_categoria_ativa',
-        'produtos'
+        "categorias",
+        "id_categoria_ativa",
+        "produtos"
       )
     );
   }
@@ -61,7 +63,7 @@ class CardapioController extends Controller
 
   public function visualizarCarrinhoCompras()
   {
-    $carrinhoSession  = session('carrinho_preview');
+    $carrinhoSession  = session("carrinho_preview");
     $cdMesa           = session("mesa");
     $carrinhoProdutos = [];
     $subTotalGeral    = 0;
@@ -70,7 +72,7 @@ class CardapioController extends Controller
     {
       foreach ($carrinhoSession["arrMesa"][$cdMesa]["arrProdutos"] as $index => $arrDadosProduto)
       {
-        $Produto            = Produto::where('cd_produto', $arrDadosProduto["cd_produto"])->get()->first();
+        $Produto            = Produto::where("cd_produto", $arrDadosProduto["cd_produto"])->get()->first();
         $subTotalGeral     += $Produto->vl_valor;
         $arrDadosAdicionais = [];
         
@@ -78,7 +80,7 @@ class CardapioController extends Controller
         {
           foreach ($arrDadosProduto["arrCdAdicionais"] as $cdAdicional)
           {
-            $Adicional      = Adicional::where('cd_adicional', $cdAdicional)->get()->first();
+            $Adicional      = Adicional::where("cd_adicional", $cdAdicional)->get()->first();
             $subTotalGeral += $Adicional->vl_adicional;
             
             $arrDadosAdicionais[] = [
@@ -94,7 +96,7 @@ class CardapioController extends Controller
       }
     }
     
-    $categorias         = ProdutoCategoria::orderBy('nm_categoria')->get();
+    $categorias         = ProdutoCategoria::orderBy("nm_categoria")->get();
     $id_categoria_ativa = false;
     
     return view(
@@ -102,8 +104,8 @@ class CardapioController extends Controller
       compact([
         "carrinhoProdutos",
         "subTotalGeral",
-        'categorias',
-        'id_categoria_ativa'
+        "categorias",
+        "id_categoria_ativa"
       ])
     );
   }
@@ -112,7 +114,7 @@ class CardapioController extends Controller
   {
     $cdMesa          = session("mesa");
     $cart            = session("carrinho_preview");
-    $arrIdAdicionais = $request->get('adicionais') != null ? $request->get('adicionais') : [];
+    $arrIdAdicionais = $request->get("adicionais") != null ? $request->get("adicionais") : [];
     
     $cart["arrMesa"][$cdMesa]["arrProdutos"][] = [
       "cd_produto"      => $Produto->cd_produto,
@@ -122,20 +124,20 @@ class CardapioController extends Controller
     
     session(["carrinho_preview" => $cart]);
     
-    return $this->obterCardapioCompleto();
+    return redirect()->route("cardapio.revisao")->with("success", "Item adicionado ao carrinho!");
   }
   
   public function alterarAdicionalProduto($index, Request $request)
   {
     $cdMesa          = session("mesa");
     $cart            = session("carrinho_preview");
-    $arrIdAdicionais = $request->get('adicionais') != null ? $request->get('adicionais') : [];
+    $arrIdAdicionais = $request->get("adicionais") != null ? $request->get("adicionais") : [];
   
     $cart["arrMesa"][$cdMesa]["arrProdutos"][$index]["arrCdAdicionais"] = $arrIdAdicionais;
     
     session(["carrinho_preview" => $cart]);
     
-    return $this->obterCardapioCompleto();
+    return redirect()->route("cardapio.revisao")->with("success", "Adicionais do produto alterado!");
   }
 
   public function removerItemCarrinho($index)
@@ -147,26 +149,31 @@ class CardapioController extends Controller
     
     session(["carrinho_preview" => $cart]);
     
-    return $this->visualizarCarrinhoCompras();
+    return redirect()->route("cardapio.revisao")->with("success", "Item removido do carrinho!");
   }
 
   public function obterAdicionalProduto(Produto $produto, Request $request)
   {
-    $Adicionais = Adicional::where('cd_categoria', $produto->cd_categoria)->orderBy('nm_adicional')->get();
+    $Adicionais = Adicional::where("cd_categoria", $produto->cd_categoria)->orderBy("nm_adicional")->get();
     $Produto    = $produto;
     
     if (!count($Adicionais))
       return $this->adicionarItemCarrinho($Produto, $request);
     
     return view(
-      'cardapio.selecionar-adicional',
+      "cardapio.selecionar-adicional",
       compact(
-        'Produto',
-        'Adicionais'
+        "Produto",
+        "Adicionais"
       )
     );
   }
-
+  
+  /**
+   * Obtem e direciona para tela de seleção de adicionais do produto.
+   * @param $index
+   * @return FactoryAlias|ViewAlias
+   */
   public function editarAdicionalProdutoCarrinho($index)
   {
     $cdMesa       = session("mesa");

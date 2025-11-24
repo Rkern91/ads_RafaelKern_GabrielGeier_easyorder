@@ -1,5 +1,4 @@
 <x-public-layout>
-
     <div class="relative min-h-screen p-4 md:p-6">
 
         <div class="flex justify-center">
@@ -16,15 +15,19 @@
                     </div>
                 @else
                     @php
-                      $nmRota           = "cardapio.carrinho.adicionar";
-                      $arrParams        = ["produto" => $Produto];
-                      $dsLabelBtnSubmit = "Adicionar ao Carrinho";
+                      $nmRota            = "cardapio.carrinho.adicionar";
+                      $arrParams         = ["produto" => $Produto];
+                      $dsLabelBtnSubmit  = "Adicionar ao Carrinho";
+                      $dsAlertaAlteracao = "";
+                      $dsBtnRotaVoltar   = "cardapio.index";
 
                       if (isset($index))
                       {
-                        $nmRota           = "cardapio.carrinho.alterar";
-                        $arrParams        = ["index" => $index];
-                        $dsLabelBtnSubmit = "Atualizar Carrinho";
+                        $nmRota            = "cardapio.carrinho.alterar";
+                        $arrParams         = ["index" => $index];
+                        $dsLabelBtnSubmit  = "Atualizar Carrinho";
+                        $dsAlertaAlteracao = "Deseja realmente atualizar os adicionais?";
+                        $dsBtnRotaVoltar   = "cardapio.revisao";
                       }
                     @endphp
                     <form method="post" action="{{ route($nmRota, $arrParams) }}">
@@ -66,10 +69,11 @@
 
                         <div class="mt-6 flex justify-center gap-4">
                             <button class="px-6 py-2 rounded text-white hover:opacity-90 transition"
+                                    @isset($dsAlertaAlteracao) data-confirm="{{ $dsAlertaAlteracao }}" @endisset
                                     style="background-color: darkgreen;">
                             {{$dsLabelBtnSubmit}}
                             </button>
-                            <a href="{{ route('cardapio.index') }}"
+                            <a href="{{ route($dsBtnRotaVoltar) }}"
                             class="px-5 py-2 rounded bg-white text-black hover:opacity-90 transition"
                             style="background-color: gray;">Voltar</a>
                         </div>
