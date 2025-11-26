@@ -16,4 +16,9 @@ class Adicional extends Model
   {
     return $this->belongsTo(ProdutoCategoria::class, 'cd_categoria', 'cd_categoria');
   }
+  
+  public function itens()
+  {
+    return $this->hasMany(AdicionaisPedido::class, 'cd_adicional');
+  }
 }

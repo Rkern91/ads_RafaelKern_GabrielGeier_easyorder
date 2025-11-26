@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AdicionaisPedido;
 use App\Models\Adicional;
+use App\Models\ItensPedido;
 use App\Models\Mesa;
+use App\Models\Pedido;
 use App\Models\Produto;
 use App\Models\ProdutoCategoria       as ProdutoCategoria;
 use Illuminate\Contracts\View\Factory as FactoryAlias;
@@ -19,7 +22,7 @@ class CardapioController extends Controller
   public function obterCardapioCompleto()
   {
     //TODO: Estruturar uma forma mais dinâmica de logar e identificar a mesa
-    session(["mesa" => 1]);
+    session(["mesa" => 3]);
     
     $categorias         = ProdutoCategoria::orderBy("nm_categoria")->get();
     $id_categoria_ativa = $categorias[0]->cd_categoria;
@@ -59,6 +62,68 @@ class CardapioController extends Controller
   public function confirmarEnviarPedido(Request $request)
   {
     //TODO: Ajustar método de confirmação do pedido
+    $carrinhoSession  = session("carrinho_preview");
+    $cdMesa           = session("mesa");
+    $subTotalGeral    = 0;
+    $carrinhoProdutos = [];
+    
+    if (isset($carrinhoSession["arrMesa"]) && count($carrinhoSession["arrMesa"][$cdMesa]["arrProdutos"]))
+    {
+      foreach ($carrinhoSession["arrMesa"][$cdMesa]["arrProdutos"] as $index => $arrDadosProduto)
+      {
+        $Produto            = Produto::where("cd_produto", $arrDadosProduto["cd_produto"])->get()->first();
+        $subTotalGeral     += ($Produto->vl_valor * $arrDadosProduto["qt_produto"]);
+        $arrDadosAdicionais = [];
+        
+        if (isset($arrDadosProduto["arrCdAdicionais"]))
+        {
+          foreach ($arrDadosProduto["arrCdAdicionais"] as $cdAdicional)
+          {
+            $Adicional      = Adicional::where("cd_adicional", $cdAdicional)->get()->first();
+            $subTotalGeral += ($Adicional->vl_adicional * $arrDadosProduto["qt_produto"]);
+            
+            $arrDadosAdicionais[] = [
+              "obj_adicional" => $Adicional
+            ];
+          }
+        }
+        
+        $carrinhoProdutos[] = [
+          "obj_produto"    => $Produto,
+          "qt_produto"     => $arrDadosProduto["qt_produto"],
+          "arr_adicionais" => $arrDadosAdicionais
+        ];
+      }
+      
+      $Pedido = Pedido::create([
+        "cd_mesa"    => $cdMesa,
+        "vl_pedido"  => $subTotalGeral,
+        "id_status"  => 0, // em aberto
+        "ds_observacao" => $request->get("ds_observacao"),
+      ]);
+      
+      foreach ($carrinhoProdutos as $itemCarrinho)
+      {
+        $ItemPedido = ItensPedido::create([
+          "cd_pedido" => $Pedido->cd_pedido,
+          "cd_produto" => $itemCarrinho["obj_produto"]->cd_produto,
+          "qt_produto" => $itemCarrinho["qt_produto"]
+        ]);
+        
+        foreach ($itemCarrinho["arr_adicionais"] as $arrDadoAdicional)
+        {
+          AdicionaisPedido::create([
+            "cd_item_pedido" => $ItemPedido->cd_item_pedido,
+            "cd_adicional"   => $arrDadoAdicional["obj_adicional"]->cd_adicional
+          ]);
+        }
+      }
+    }
+    
+    $carrinhoSession["arrMesa"][$cdMesa]["arrProdutos"] = [];
+    session(["carrinho_preview" => $carrinhoSession]);
+    
+    return redirect()->route("cardapio.revisao")->with("success", "Pedido enviado com sucesso!");
   }
 
   public function visualizarCarrinhoCompras()
@@ -68,12 +133,12 @@ class CardapioController extends Controller
     $carrinhoProdutos = [];
     $subTotalGeral    = 0;
     
-    if (isset($carrinhoSession["arrMesa"]) && count($carrinhoSession["arrMesa"][$cdMesa]["arrProdutos"]))
+    if (isset($carrinhoSession["arrMesa"][$cdMesa]) && count($carrinhoSession["arrMesa"][$cdMesa]["arrProdutos"]))
     {
       foreach ($carrinhoSession["arrMesa"][$cdMesa]["arrProdutos"] as $index => $arrDadosProduto)
       {
         $Produto            = Produto::where("cd_produto", $arrDadosProduto["cd_produto"])->get()->first();
-        $subTotalGeral     += $Produto->vl_valor;
+        $subTotalGeral     += ($Produto->vl_valor * $arrDadosProduto["qt_produto"]);
         $arrDadosAdicionais = [];
         
         if (isset($arrDadosProduto["arrCdAdicionais"]))
@@ -81,7 +146,7 @@ class CardapioController extends Controller
           foreach ($arrDadosProduto["arrCdAdicionais"] as $cdAdicional)
           {
             $Adicional      = Adicional::where("cd_adicional", $cdAdicional)->get()->first();
-            $subTotalGeral += $Adicional->vl_adicional;
+            $subTotalGeral += ($Adicional->vl_adicional * $arrDadosProduto["qt_produto"]);
             
             $arrDadosAdicionais[] = [
               "obj_adicional" => $Adicional
@@ -91,6 +156,7 @@ class CardapioController extends Controller
 
         $carrinhoProdutos[$index] = [
           "obj_produto"    => $Produto,
+          "qt_produto"     => $arrDadosProduto["qt_produto"],
           "arr_adicionais" => $arrDadosAdicionais
         ];
       }
@@ -114,11 +180,13 @@ class CardapioController extends Controller
   {
     $cdMesa          = session("mesa");
     $cart            = session("carrinho_preview");
-    $arrIdAdicionais = $request->get("adicionais") != null ? $request->get("adicionais") : [];
+    $arrIdAdicionais = $request->get("arr_adicionais")    != null ? $request->get("arr_adicionais")    : [];
+    $qtProduto       = $request->get("qt_produto_submit") != null ? $request->get("qt_produto_submit") : 1;
     
     $cart["arrMesa"][$cdMesa]["arrProdutos"][] = [
       "cd_produto"      => $Produto->cd_produto,
       "nm_produto"      => $Produto->nm_produto,
+      "qt_produto"      => $qtProduto,
       "arrCdAdicionais" => $arrIdAdicionais
     ];
     
@@ -131,13 +199,15 @@ class CardapioController extends Controller
   {
     $cdMesa          = session("mesa");
     $cart            = session("carrinho_preview");
-    $arrIdAdicionais = $request->get("adicionais") != null ? $request->get("adicionais") : [];
+    $arrIdAdicionais = $request->get("arr_adicionais")    != null ? $request->get("arr_adicionais") : [];
+    $qtProduto       = $request->get("qt_produto_submit") != null ? $request->get("qt_produto_submit") : 1;
   
     $cart["arrMesa"][$cdMesa]["arrProdutos"][$index]["arrCdAdicionais"] = $arrIdAdicionais;
+    $cart["arrMesa"][$cdMesa]["arrProdutos"][$index]["qt_produto"]      = $qtProduto;
     
     session(["carrinho_preview" => $cart]);
     
-    return redirect()->route("cardapio.revisao")->with("success", "Adicionais do produto alterado!");
+    return redirect()->route("cardapio.revisao")->with("success", "Item atualizado!");
   }
 
   public function removerItemCarrinho($index)
@@ -180,6 +250,7 @@ class CardapioController extends Controller
     $cart         = session("carrinho_preview");
     $indexProduto = $cart["arrMesa"][$cdMesa]["arrProdutos"][$index];
     $selectedAdds = $cart["arrMesa"][$cdMesa]["arrProdutos"][$index]["arrCdAdicionais"];
+    $qtProduto    = $cart["arrMesa"][$cdMesa]["arrProdutos"][$index]["qt_produto"];
     $Produto      = Produto::where("cd_produto", $indexProduto["cd_produto"])->get()->first();
     $Adicionais   = Adicional::where("cd_categoria", $Produto->cd_categoria)->orderBy("nm_adicional")->get();
     
@@ -189,7 +260,8 @@ class CardapioController extends Controller
         "Produto",
         "Adicionais",
         "selectedAdds",
-        "index"
+        "index",
+        "qtProduto",
       )
     );
   }

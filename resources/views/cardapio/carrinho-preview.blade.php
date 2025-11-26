@@ -23,6 +23,7 @@
                         @foreach($carrinhoProdutos as $index => $arrItem)
                             @php
                                 $Produto       = $arrItem["obj_produto"];
+                                $qtProduto     = $arrItem["qt_produto"];
                                 $arrAdicionais = $arrItem['arr_adicionais'];
                             @endphp
                             <div class="border border-white/10 rounded p-4 flex justify-between gap-4"
@@ -40,6 +41,9 @@
                                     @endif
                                     <div class="mt-2 font-semibold" style="color: green;">
                                         R$ {{ number_format($Produto->vl_valor, 2, ',', '.') }}
+                                    </div>
+                                    <div class="mt-2 font-semibold" style="color: green;">
+                                        Quantidade: x{{ $qtProduto }}
                                     </div>
 
                                     {{-- Adicionais do produto --}}
@@ -66,13 +70,13 @@
                                     <form method="post" action="{{ route('cardapio.carrinho.produto.editar', ['index' => $index]) }}">
                                         @csrf
                                         <button class="px-3 py-1 text-black rounded bg-white hover:opacity-80 transition text-sm">
-                                            Editar Adicionais
+                                            Editar Item
                                         </button>
                                     </form>
                                     <form method="post" action="{{ route('cardapio.carrinho.remover', ['index' => $index]) }}">
                                         @csrf
                                         <button class="px-3 py-1 text-white rounded bg-red-600 hover:opacity-80 transition text-sm"
-                                                data-confirm="Deseja remover este produto?">Remover Produto</button>
+                                                data-confirm="Deseja remover este produto?">Remover Item</button>
                                     </form>
                                 </div>
                             </div>
@@ -86,7 +90,7 @@
                             <div class="text-sm uppercase tracking-wide text-white mb-2 mt-6">
                                 Observações do pedido (opcional)
                             </div>
-                            <textarea name="obs" rows="4" class="w-full rounded bg-black border border-white/20 p-3 text-white" placeholder="Alguma obserção especial?"></textarea>
+                            <textarea name="ds_observacao" rows="4" class="w-full rounded bg-black border border-white/20 p-3 text-white" placeholder="Alguma obserção especial?"></textarea>
                         </div>
 
                         {{-- Total --}}
