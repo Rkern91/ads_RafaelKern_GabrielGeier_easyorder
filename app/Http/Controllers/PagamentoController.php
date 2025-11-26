@@ -39,7 +39,7 @@ class PagamentoController extends Controller
 
     abort_if(!$p, 404);
 
-    $valor = max((float) $p->vl_pedido, (float) env('ASAAS_MIN_PIX', 1.00));
+    $valor = max((float) $p->vl_pedido, (float) env('ASAAS_MIN_PIX', 5.00));
     $base  = $this->baseUrl();
     $http  = $this->http();
 
@@ -56,8 +56,8 @@ class PagamentoController extends Controller
         $c = $http->post("$base/customers", [
           'name'              => 'Cliente Mesa '.($p->cd_mesa ?? '—'),
           'cpfCnpj'           => env('ASAAS_DEFAULT_CPF','04044566003'),
-          'email'             => env('ASAAS_DEFAULT_EMAIL','sandbox@example.com'),
-          'phone'             => env('ASAAS_DEFAULT_PHONE','0000000000'),
+          'email'             => env('ASAAS_DEFAULT_EMAIL','gabrielgeier12@gmail.com'),
+          'phone'             => env('ASAAS_DEFAULT_PHONE','54997056446'),
           'externalReference' => "pedido-{$p->cd_pedido}",
         ])->throw()->json();
 
@@ -120,10 +120,11 @@ class PagamentoController extends Controller
     {
       $http->post("$base/sandbox/payment/{$payId}/confirm")->throw();
 
+      // ToDo: terá que ser consultado a cada 5 segundos
       $status = $http->get("$base/payments/{$payId}")->throw()->json();
 
       DB::table('pedido')->where('cd_pedido', $pedidoId)->update([
-        'ds_asaas_return' => json_encode($status, JSON_UNESCAPED_UNICODE),
+        'ds_asaas_response' => json_encode($status, JSON_UNESCAPED_UNICODE),
       ]);
 
       return redirect()->route('cardapio.index', ['mesa' => $p->cd_mesa])->with('success', 'Pagamento confirmado (sandbox).');
