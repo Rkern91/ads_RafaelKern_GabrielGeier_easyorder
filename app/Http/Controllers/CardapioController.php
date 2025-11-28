@@ -287,7 +287,7 @@ class CardapioController extends Controller
       $vlTotalPedidos += $Pedido->vl_pedido;
     
     return view(
-      'cardapio.confirmacao',
+      'cardapio.conta',
       compact([
         "Pedidos",
         "categorias",
