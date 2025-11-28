@@ -91,20 +91,21 @@ CREATE TABLE pedido(
 );
 
 CREATE TABLE itens_pedido(
+  cd_item_pedido SERIAL,
   cd_pedido  INT,
   cd_produto INT,
   qt_produto INT,
+  CONSTRAINT pk_cd_item_pedido PRIMARY KEY (cd_item_pedido),
   CONSTRAINT fk_cd_pedido  FOREIGN KEY (cd_pedido)  REFERENCES pedido  (cd_pedido)  ON DELETE CASCADE,
   CONSTRAINT fk_cd_produto FOREIGN KEY (cd_produto) REFERENCES produto (cd_produto) ON DELETE CASCADE
 );
 
 CREATE TABLE adicionais_pedido(
-  cd_pedido            INT,
-  cd_adicional_produto INT,
-  cd_adicional_pedido  INT,
-  CONSTRAINT fk_cd_pedido           FOREIGN KEY (cd_pedido)            REFERENCES pedido    (cd_pedido)    ON DELETE CASCADE,
-  CONSTRAINT fk_cd_adicional_pedido FOREIGN KEY (cd_adicional_pedido)  REFERENCES adicional (cd_adicional) ON DELETE CASCADE,
-  CONSTRAINT fk_cd_produto          FOREIGN KEY (cd_adicional_produto) REFERENCES produto   (cd_produto)   ON DELETE CASCADE
+  cd_item_pedido INT,
+  cd_adicional   INT,
+  CONSTRAINT pk_adicionais_pedido PRIMARY KEY (cd_item_pedido, cd_adicional),
+  CONSTRAINT fk_item_pedido       FOREIGN KEY (cd_item_pedido) REFERENCES itens_pedido (cd_item_pedido) ON DELETE CASCADE,
+  CONSTRAINT fk_cd_adicional      FOREIGN KEY (cd_adicional)  REFERENCES adicional (cd_adicional) ON DELETE CASCADE
 );
 
 -- INSERT INTO pedido (vl_pedido, id_status) VALUES (5, 0);

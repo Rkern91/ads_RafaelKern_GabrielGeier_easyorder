@@ -70,7 +70,7 @@ Route::post('/cardapio/remover/{index}',                [CardapioController::cla
 Route::post('/cardapio/alterarAdicional/{index}',       [CardapioController::class, 'alterarAdicionalProduto'])       ->name('cardapio.carrinho.alterar');
 Route::post('/cardapio/editarAdicionalProduto/{index}', [CardapioController::class, 'editarAdicionalProdutoCarrinho'])->name('cardapio.carrinho.produto.editar');
 Route::get('/cardapio/visualizarCarrinhoCompras',       [CardapioController::class, 'visualizarCarrinhoCompras'])     ->name('cardapio.revisao');
-Route::get('/cardapio/resumoConta',                     [CardapioController::class, 'conta'])                         ->name('cardapio.conta');
+Route::get('/cardapio/resumoConta',                     [CardapioController::class, 'visualizarConta'])               ->name('cardapio.conta');
 Route::post('/cardapio/enviarPedido',                   [CardapioController::class, 'confirmarEnviarPedido'])         ->name('cardapio.confirmar');
 
 Route::middleware(['auth'])->group(function () {

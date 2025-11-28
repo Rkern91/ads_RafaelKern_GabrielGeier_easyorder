@@ -15,13 +15,8 @@
       "cd_adicional"
     ];
     
-    public function item()
-    {
-      return $this->belongsTo(ItensPedido::class, "cd_item_pedido");
-    }
-    
     public function adicional()
     {
-      return $this->belongsTo(Adicional::class, "cd_adicional");
+      return $this->belongsTo(Adicional::class, 'cd_adicional', 'cd_adicional');
     }
   }

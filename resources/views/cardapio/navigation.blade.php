@@ -34,7 +34,7 @@
                     🛒 Carrinho
                 </x-nav-link>
 
-                <x-nav-link href="{{ route('cardapio.conta') }}">
+                <x-nav-link href="{{ route('cardapio.conta') }}" :active="request()->routeIs('cardapio.conta')">
                     💳 Conta da Mesa
                 </x-nav-link>
             </div>

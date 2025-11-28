@@ -37,11 +37,10 @@
     public function mesa()
     {
       return $this->belongsTo(Mesa::class, "cd_mesa", "cd_mesa");
-    }    
+    }
     
-    public function produtos()
+    public function itens()
     {
-      return $this->belongsToMany(Produto::class, "itens_pedido", "cd_pedido", "cd_produto")
-        ->withPivot("qt_produto");
+      return $this->hasMany(ItensPedido::class, 'cd_pedido', 'cd_pedido');
     }
   }

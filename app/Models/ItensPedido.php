@@ -16,18 +16,13 @@
       "qt_produto"
     ];
     
-    public function item()
-    {
-      return $this->belongsTo(Pedido::class, "cd_pedido");
-    }
-    
     public function produto()
     {
-      return $this->belongsTo(Produto::class, "cd_produto");
+      return $this->belongsTo(Produto::class, 'cd_produto', 'cd_produto');
     }
     
-    public function adicionaisPedido()
+    public function adicionais()
     {
-      return $this->hasMany(AdicionaisPedido::class, 'cd_item_pedido');
+      return $this->hasMany(AdicionaisPedido::class, 'cd_item_pedido', 'cd_item_pedido');
     }
   }

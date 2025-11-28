@@ -1,134 +1,149 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Confirmação do Pedido</title>
-    @vite('resources/css/app.css')
-</head>
-<body class="bg-black text-white">
-<div class="relative min-h-screen" style="background-color:black;">
-    <div class="fixed inset-0 z-0 pointer-events-none"
-         style="background-image:url('{{ asset('images/bg-3840x2400.jpg') }}');background-size:cover;background-position:center;background-attachment:fixed;opacity:.2"></div>
+<x-public-layout>
+    @include('cardapio.navigation')
 
-    <div class="relative z-10 min-h-screen flex">
-        <aside class="w-64 hidden md:block border-r border-white/10" style="background-color:#0f0f0f;">
-            <div class="p-4 text-sm uppercase tracking-wide text-gray-300">Produtos</div>
-            <nav class="px-2 space-y-1">
-                @foreach($categorias as $c)
-                    <a href="{{ route('cardapio.categoria', ['categoria'=>$c->cd_categoria]) }}"
-                       class="block px-3 py-2 rounded hover:bg-white/10">
-                        {{ $c->nm_categoria }}
-                    </a>
-                @endforeach
-            </nav>
-        </aside>
+    <div class="min-w-full pt-6 mt-10"></div>
 
-        <main class="flex-1">
-            <header class="flex items-center justify-between px-4 md:px-6 h-16 border-b border-white/10"
-                    style="background-color:#0f0f0f;">
-                <div class="font-semibold text-lg">Confirme seu Pedido</div>
-                <div class="relative">
-                    <button class="px-3 py-1 rounded border border-white/20 text-black">🛒</button>
-                </div>
-            </header>
+    <div class="relative min-h-screen p-4 md:p-6">
+        <div class="flex justify-center">
 
-            <div class="p-4 md:p-6">
-                <div class="flex justify-center">
-                    <div class="inline-block bg-black text-white border border-white/20 rounded-lg p-5"
-                         style="background-color:#0f0f0f; padding:20px; width:100%; max-width:900px;">
+            <div class="inline-block bg-black text-white border border-white/20 rounded-lg p-5 w-full"
+                 style="background-color:#0f0f0f; max-width:900px;">
 
-                        <h1 class="text-2xl font-semibold mb-4" style="text-align:center;">Revisão do Pedido</h1>
+                <h1 class="text-2xl font-semibold mb-6 text-center">
+                    Conta da Mesa
+                </h1>
 
-                        @php
-                            $produtos = collect($cart['produtos'] ?? []);
-                            $adicionais = collect($cart['adicionais'] ?? []);
-                            $total = (float)($cart['total'] ?? 0);
-                            $obs = $cart['obs'] ?? '';
-                        @endphp
+                {{-- Se não tiver nenhum pedido --}}
+                @if($Pedidos->isEmpty())
+                    <div class="text-center text-gray-300">Mesa sem consumo</div>
+                    <div class="text-center mt-4">
+                        <a href="{{ route('cardapio.index') }}"
+                           class="inline-block px-5 py-2 rounded bg-gray-500 text-white hover:opacity-90 transition">
+                            Voltar ao menu
+                        </a>
+                    </div>
+                @else
 
-                        @if($produtos->isEmpty() && $adicionais->isEmpty())
-                            <div class="text-center text-gray-300">Nenhum item selecionado.</div>
-                        @else
-                            @if($produtos->isNotEmpty())
-                                <div class="mb-4">
-                                    <div class="text-sm uppercase tracking-wide text-gray-300 mb-2">Produtos</div>
-                                    <div class="space-y-2">
-                                        @foreach($produtos as $i)
-                                            <div class="flex items-center justify-between border border-white/10 rounded p-3"
-                                                 style="background-color:#0f0f0f; padding: 5px; margin-bottom: 10px;">
-                                                <div class="min-w-0">
-                                                    <div class="font-medium">{{ $i['qtd'] }} × {{ $i['nome'] }}</div>
-                                                    <div class="text-xs text-gray-300">
-                                                        R$ {{ number_format($i['preco'],2,',','.') }} cada
-                                                    </div>
-                                                </div>
-                                                <div class="font-medium">
-                                                    R$ {{ number_format($i['subtotal'],2,',','.') }}
-                                                </div>
-                                            </div>
-                                        @endforeach
+                    {{-- Loop dos pedidos --}}
+                    <div class="space-y-8">
+
+                        @foreach($Pedidos as $Pedido)
+                            <div class="border border-white/10 rounded p-5" style="background-color:#141414;">
+
+                                {{-- HEADER DO PEDIDO --}}
+                                <div class="flex justify-between items-center mb-4">
+                                    <div>
+                                        <div class="text-lg font-semibold">
+                                            Pedido #{{ $Pedido->cd_pedido }}
+                                        </div>
+                                        <div class="text-sm text-gray-400">
+                                            {{ \Carbon\Carbon::parse($Pedido->dt_pedido)->format('d/m/Y H:i') }}
+                                        </div>
+                                    </div>
+
+                                    {{-- Status --}}
+                                    @php
+                                        $statusLabels = [
+                                            0 => 'Em Aberto',
+                                            1 => 'Preparando',
+                                            2 => 'Servido'
+                                        ];
+                                        $statusColors = [
+                                            0 => 'text-yellow-400',
+                                            1 => 'text-blue-400',
+                                            2 => 'text-green-400'
+                                        ];
+                                    @endphp
+
+                                    <div class="text-sm font-semibold {{ $statusColors[$Pedido->id_status] }}">
+                                        {{ $statusLabels[$Pedido->id_status] }}
                                     </div>
                                 </div>
-                            @endif
 
-                            @if($adicionais->isNotEmpty())
-                                <div class="mb-4">
-                                    <div class="text-sm uppercase tracking-wide text-gray-300 mb-2">Adicionais</div>
-                                    <div class="space-y-2">
-                                        @foreach($adicionais as $i)
-                                            <div class="flex items-center justify-between border border-white/10 rounded p-3"
-                                                 style="background-color:#0f0f0f; padding: 5px; margin-bottom: 10px;">
-                                                <div class="min-w-0">
-                                                    <div class="font-medium">{{ $i['qtd'] }} × {{ $i['nome'] }}</div>
+                                {{-- LISTA DE ITENS DO PEDIDO --}}
+                                <div class="space-y-4">
+                                    @foreach($Pedido->itens as $Item)
+                                        <div class="border border-white/10 rounded p-3"
+                                             style="background-color:#0f0f0f;">
+                                            {{-- Produto principal --}}
+                                            <div class="flex justify-between">
+                                                <div>
+
+                                                    <div class="font-semibold text-lg">
+                                                        {{ $Item->produto->nm_produto }}
+                                                    </div>
+
                                                     <div class="text-xs text-gray-300">
-                                                        R$ {{ number_format($i['preco'],2,',','.') }} cada
+                                                        Quantidade: x{{ $Item->qt_produto }}
+                                                    </div>
+
+                                                    <div class="text-xs text-gray-300">
+                                                        Unitário: R$
+                                                        {{ number_format($Item->produto->vl_valor,2,',','.') }}
                                                     </div>
                                                 </div>
-                                                <div class="font-medium">
-                                                    R$ {{ number_format($i['subtotal'],2,',','.') }}
+                                                <div class="font-semibold" style="color: green;">
+                                                    R$ {{ number_format($Item->produto->vl_valor * $Item->qt_produto,2,',','.') }}
                                                 </div>
                                             </div>
-                                        @endforeach
-                                    </div>
-                                </div>
-                            @endif
 
-                            <div class="mt-4">
-                                <div class="text-sm uppercase tracking-wide text-gray-300 mb-2">Observação</div>
-                                <div class="border border-white/10 rounded p-3"
-                                     style="background-color:#0f0f0f; padding: 5px;">
-                                    {{ $obs ?: '—' }}
+                                            {{-- Adicionais --}}
+                                            @if($Item->adicionais->isNotEmpty())
+                                                <div class="mt-3 text-sm text-gray-400 uppercase">
+                                                    Adicionais
+                                                </div>
+
+                                                @foreach($Item->adicionais as $arrAdicionalPedido)
+                                                    <div class="flex justify-between text-sm mt-1 border border-white/10 rounded p-2">
+                                                        <div>{{ $arrAdicionalPedido->adicional->nm_adicional }}</div>
+                                                        <div style="color: green;">
+                                                            R$ {{ number_format($arrAdicionalPedido->adicional->vl_adicional * $Item->qt_produto,2,',','.') }}
+                                                        </div>
+                                                    </div>
+                                                @endforeach
+                                            @endif
+
+                                        </div>
+                                    @endforeach
                                 </div>
+
+                                {{-- Observações --}}
+                                @if (!empty($Pedido->ds_observacao))
+                                    <div class="mt-4">
+                                        <div class="text-sm uppercase tracking-wide text-gray-400 mb-2">
+                                            Observação
+                                        </div>
+                                        <div class="border border-white/10 rounded p-3">
+                                            {{ $Pedido->ds_observacao }}
+                                        </div>
+                                    </div>
+                                @endif
+
                             </div>
+                        @endforeach
 
-                            <div class="mt-6 flex items-center justify-between border-t border-white/10 pt-4">
-                                <div class="text-lg font-semibold">Total</div>
+                            {{-- TOTAL DO PEDIDO --}}
+                            <div class="mt-6 flex justify-between border-t border-white/10 pt-4">
+                                <div class="text-lg font-semibold">Total do Pedido</div>
                                 <div class="text-lg font-semibold" style="color: green;">
-                                    R$ {{ number_format($total,2,',','.') }}</div>
+                                    R$ {{ number_format($vlTotalPedidos,2,',','.') }}
+                                </div>
                             </div>
 
-                            <div class="mt-6 flex justify-center gap-3">
-                                <a href="{{ route('cardapio.index', ['mesa'=>1, 'restore'=>1]) }}"
-                                   class="px-6 py-2 rounded bg-gray-500 text-black hover:opacity-90 transition"
-                                   style="color:white;">
-                                    Alterar
-                                </a>
-                                <form method="post" action="{{ route('pedido.finalizar') }}">
-                                    @csrf
-                                    <button class="px-6 py-2 rounded text-black hover:opacity-90 transition"
-                                            style="color:white; background-color: darkgreen">
-                                        Enviar pedido
-                                    </button>
-                                </form>
+                            {{-- Botão para pagamento - implementar chamada da rota de pagamento --}}
+                            <div class="mt-6 text-center">
+                                <button class="px-6 py-2 rounded text-white hover:opacity-90 transition"
+                                        style="background-color: darkgreen;"
+                                        disabled>
+                                    Realizar pagamento
+                                </button>
                             </div>
-                        @endif
 
                     </div>
-                </div>
+
+                @endif
             </div>
-        </main>
+        </div>
     </div>
-</div>
-</body>
-</html>
+
+</x-public-layout>

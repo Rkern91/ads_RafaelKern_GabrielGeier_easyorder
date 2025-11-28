@@ -265,4 +265,35 @@ class CardapioController extends Controller
       )
     );
   }
+  
+  public function visualizarConta()
+  {
+    $cdMesa = session("mesa");
+    $Pedidos = Pedido::where('cd_mesa', $cdMesa)
+                      ->orderBy('dt_pedido', 'desc')
+                      ->with([
+                        'itens',
+                        'itens.produto',
+                        'itens.adicionais',
+                        'itens.adicionais.adicional'
+                      ])
+                      ->get();
+    
+    $categorias         = ProdutoCategoria::orderBy("nm_categoria")->get();
+    $id_categoria_ativa = false;
+    $vlTotalPedidos     = 0;
+    
+    foreach ($Pedidos as $Pedido)
+      $vlTotalPedidos += $Pedido->vl_pedido;
+    
+    return view(
+      'cardapio.confirmacao',
+      compact([
+        "Pedidos",
+        "categorias",
+        "id_categoria_ativa",
+        "vlTotalPedidos"
+      ])
+    );
+  }
 }
