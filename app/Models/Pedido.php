@@ -21,7 +21,7 @@
       "ds_observacao",
       "ds_asaas_customer_id",
       "ds_asaas_payment_id",
-      "ds_asaas_return",
+      "ds_asaas_response",
     ];
     
     // Cast dos campos
@@ -42,16 +42,5 @@
     public function itens()
     {
       return $this->hasMany(ItensPedido::class, 'cd_pedido', 'cd_pedido');
-    }
-    
-    /**
-     * Regra para trazer apenas pedidos ainda não quitados ao listar a conta da mesa.
-     * @param $query
-     * @return mixed
-     */
-    public function scopeNaoPagos($query)
-    {
-      return $query->whereNull('ds_asaas_return')
-        ->orWhere('ds_asaas_return', '');
     }
   }

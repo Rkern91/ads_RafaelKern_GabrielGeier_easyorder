@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'Laravel') }}</title>
+    <title>Easy Order</title>
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
@@ -65,6 +65,11 @@
         });
       });
     </script>
+    <style>
+      table {
+        border-radius: 8px !important;
+      }
+    </style>
 </head>
 <body class="font-sans antialiased" style="background-color: black;">
 <div class="fixed inset-0 z-0 pointer-events-none"

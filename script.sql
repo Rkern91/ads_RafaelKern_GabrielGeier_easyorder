@@ -81,7 +81,7 @@ CREATE TABLE pedido(
   cd_mesa   INT,
   vl_pedido NUMERIC(15,2) NOT NULL,
   dt_pedido TIMESTAMP DEFAULT NOW(),
-  id_status INT CHECK (id_status IN(0,1,2)) NOT NULL, -- 'Em Aberto', 'Preparando', 'Servido',
+  id_status INT CHECK (id_status IN(0,1,2,3)) NOT NULL, -- 'Em Aberto', 'Preparando', 'Servido', 'Concluido'
   ds_observacao TEXT,
   ds_asaas_customer_id TEXT,
   ds_asaas_payment_id TEXT,

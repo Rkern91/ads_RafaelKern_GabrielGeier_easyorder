@@ -86,6 +86,8 @@
                     {{-- Observação --}}
                     <form method="post" action="{{ route('cardapio.confirmar') }}">
                         @csrf
+
+                        <input type="hidden" name="cd_mesa" id="cd_mesa_hidden">
                         <div class="mt-8">
                             <div class="text-sm uppercase tracking-wide text-white mb-2 mt-6">
                                 Observações do pedido (opcional)
@@ -103,7 +105,7 @@
 
                         {{-- Botões --}}
                         <div class="mt-6 flex justify-center gap-4">
-                            <button class="px-6 py-2 rounded text-white hover:opacity-90 transition"
+                            <button id="btnConfirmarPedido" class="px-6 py-2 rounded text-white hover:opacity-90 transition"
                                     style="background-color: darkgreen;"
                                     data-confirm="Deseja finalizar alterações e enviar o pedido?">
                                 Confirmar Pedido
@@ -118,5 +120,24 @@
             </div>
         </div>
     </div>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <script>
+      (function () {
+        var KEY = 'cd_mesa';
+        var hidden = document.getElementById('cd_mesa_hidden');
+        var btn = document.getElementById('btnConfirmarPedido');
+        var mesa = localStorage.getItem(KEY);
+
+        if (mesa)
+          hidden.value = mesa;
+
+        btn.addEventListener('click', function (e) {
+          if (!hidden.value) {
+            e.preventDefault();
+            alert('Defina a mesa deste dispositivo na área administrativa (Mesas) antes de confirmar o pedido.');
+          }
+        });
+      })();
+    </script>
 
 </x-public-layout>

@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\AdicionaisPedido;
 use App\Models\Adicional;
 use App\Models\ItensPedido;
-use App\Models\Mesa;
 use App\Models\Pedido;
 use App\Models\Produto;
 use App\Models\ProdutoCategoria       as ProdutoCategoria;
@@ -61,69 +60,89 @@ class CardapioController extends Controller
 
   public function confirmarEnviarPedido(Request $request)
   {
-    //TODO: Ajustar método de confirmação do pedido
-    $carrinhoSession  = session("carrinho_preview");
-    $cdMesa           = session("mesa");
-    $subTotalGeral    = 0;
-    $carrinhoProdutos = [];
-    
-    if (isset($carrinhoSession["arrMesa"]) && count($carrinhoSession["arrMesa"][$cdMesa]["arrProdutos"]))
-    {
-      foreach ($carrinhoSession["arrMesa"][$cdMesa]["arrProdutos"] as $index => $arrDadosProduto)
+    // cd_mesa vem do hidden (LocalStorage) — obrigatório
+    $cdMesa = (int)$request->input('cd_mesa');
+
+    if (!$cdMesa)
+      return back()->with('error', 'Mesa não definida neste dispositivo.');
+
+    $cart = session('carrinho_preview');
+
+    if (!isset($cart['arrMesa'][$cdMesa]['arrProdutos']) || empty($cart['arrMesa'][$cdMesa]['arrProdutos']))
+      return back()->with('error', 'Seu carrinho está vazio.');
+
+    $arrItensSessao = $cart['arrMesa'][$cdMesa]['arrProdutos'];
+    $dsObs = $request->input('ds_observacao');
+
+    // Calcula total e resolve objetos
+    $subTotalGeral = 0.0;
+    $itensParaPersistir = [];
+
+    foreach ($arrItensSessao as $item) {
+
+      $produto = Produto::where('cd_produto', $item['cd_produto'])->first();
+      if (!$produto)
+        continue;
+
+      $qt = (int)($item['qt_produto'] ?? 1);
+      $subTotalGeral += ($produto->vl_valor * $qt);
+
+      $adicionaisObjs = [];
+
+      foreach (($item['arrCdAdicionais'] ?? []) as $cdAd)
       {
-        $Produto            = Produto::where("cd_produto", $arrDadosProduto["cd_produto"])->get()->first();
-        $subTotalGeral     += ($Produto->vl_valor * $arrDadosProduto["qt_produto"]);
-        $arrDadosAdicionais = [];
-        
-        if (isset($arrDadosProduto["arrCdAdicionais"]))
+        $ad = Adicional::where('cd_adicional', $cdAd)->first();
+        if ($ad)
         {
-          foreach ($arrDadosProduto["arrCdAdicionais"] as $cdAdicional)
-          {
-            $Adicional      = Adicional::where("cd_adicional", $cdAdicional)->get()->first();
-            $subTotalGeral += ($Adicional->vl_adicional * $arrDadosProduto["qt_produto"]);
-            
-            $arrDadosAdicionais[] = [
-              "obj_adicional" => $Adicional
-            ];
-          }
+          $subTotalGeral += ($ad->vl_adicional * $qt);
+          $adicionaisObjs[] = $ad;
         }
-        
-        $carrinhoProdutos[] = [
-          "obj_produto"    => $Produto,
-          "qt_produto"     => $arrDadosProduto["qt_produto"],
-          "arr_adicionais" => $arrDadosAdicionais
-        ];
       }
-      
+
+      $itensParaPersistir[] = [
+        'produto' => $produto,
+        'qt' => $qt,
+        'adicionais' => $adicionaisObjs,
+      ];
+    }
+
+    if (empty($itensParaPersistir))
+      return back()->with('error', 'Não foi possível montar o pedido a partir do carrinho.');
+
+    // Persiste tudo em transação
+    $Pedido = DB::transaction(function () use ($cdMesa, $subTotalGeral, $dsObs, $itensParaPersistir)
+    {
       $Pedido = Pedido::create([
-        "cd_mesa"    => $cdMesa,
-        "vl_pedido"  => $subTotalGeral,
-        "id_status"  => 0, // em aberto
-        "ds_observacao" => $request->get("ds_observacao"),
+        'cd_mesa' => $cdMesa,
+        'vl_pedido' => $subTotalGeral,
+        'id_status' => 0, // em aberto
+        'ds_observacao' => $dsObs,
       ]);
-      
-      foreach ($carrinhoProdutos as $itemCarrinho)
-      {
-        $ItemPedido = ItensPedido::create([
-          "cd_pedido" => $Pedido->cd_pedido,
-          "cd_produto" => $itemCarrinho["obj_produto"]->cd_produto,
-          "qt_produto" => $itemCarrinho["qt_produto"]
+
+      foreach ($itensParaPersistir as $item) {
+        $Item = ItensPedido::create([
+          'cd_pedido' => $Pedido->cd_pedido,
+          'cd_produto' => $item['produto']->cd_produto,
+          'qt_produto' => $item['qt'],
         ]);
-        
-        foreach ($itemCarrinho["arr_adicionais"] as $arrDadoAdicional)
-        {
+
+        foreach ($item['adicionais'] as $ad) {
           AdicionaisPedido::create([
-            "cd_item_pedido" => $ItemPedido->cd_item_pedido,
-            "cd_adicional"   => $arrDadoAdicional["obj_adicional"]->cd_adicional
+            'cd_item_pedido' => $Item->cd_item_pedido,
+            'cd_adicional' => $ad->cd_adicional,
           ]);
         }
       }
-    }
-    
-    $carrinhoSession["arrMesa"][$cdMesa]["arrProdutos"] = [];
-    session(["carrinho_preview" => $carrinhoSession]);
-    
-    return redirect()->route("cardapio.revisao")->with("success", "Pedido enviado com sucesso!");
+
+      return $Pedido;
+    });
+
+    // Limpa o carrinho da mesa
+    $cart['arrMesa'][$cdMesa]['arrProdutos'] = [];
+    session(['carrinho_preview' => $cart]);
+
+    // Redireciona para a tela de pagamento (QR Code) do pedido recém-criado
+    return redirect()->route('pagamento.show', ['pedido' => $Pedido->cd_pedido]);
   }
 
   public function visualizarCarrinhoCompras()
@@ -269,9 +288,11 @@ class CardapioController extends Controller
   public function visualizarConta()
   {
     $cdMesa  = session("mesa");
-    $Pedidos = Pedido::naoPagos()
+    $Pedidos = Pedido::query()
       ->where('cd_mesa', $cdMesa)
-      ->orderBy('dt_pedido', 'desc')
+      ->where(function ($q) {
+        $q->whereNull('id_status')->orWhere('id_status', '!=', 3);
+      })
       ->with([
         'itens',
         'itens.produto',

@@ -9,9 +9,9 @@ class PedidoController extends Controller
 {
   public function index(Request $req)
   {
-    $q = trim((string)$req->query('q', ''));
+    $q      = trim((string)$req->query('q', ''));
     $status = $req->query('status', '');
-    $mesa = trim((string)$req->query('mesa', ''));
+    $mesa   = trim((string)$req->query('mesa', ''));
 
     $sql = DB::table('pedido as p')
       ->leftJoin('mesa as m', 'm.cd_mesa', '=', 'p.cd_mesa')
@@ -26,24 +26,24 @@ class PedidoController extends Controller
       });
     }
 
-    if ($mesa !== '')
-    {
+    if ($mesa !== '') {
       $sql->where(function ($w) use ($mesa) {
         $w->where('p.cd_mesa', (int)$mesa)
           ->orWhere('m.nm_mesa', 'ilike', "%{$mesa}%");
       });
     }
 
-    if ($status !== '' && is_numeric($status))
+    if ($status !== '' && is_numeric($status)) {
       $sql->where('p.id_status', (int)$status);
+    }
 
     $pedidos = $sql->paginate(15)->appends($req->query());
 
     return view('pedidos.index', [
       'pedidos' => $pedidos,
-      'q' => $q,
-      'status' => $status,
-      'mesa' => $mesa,
+      'q'       => $q,
+      'status'  => $status,
+      'mesa'    => $mesa,
     ]);
   }
 
@@ -51,9 +51,11 @@ class PedidoController extends Controller
   {
     DB::table('pedido')
       ->where('cd_pedido', $pedidoId)
-      ->whereIn('id_status', [0, 1])
-      ->update(['id_status' => 2]);
+      ->where('id_status', '<>', 3)
+      ->update(['id_status' => 3]);
 
-    return redirect()->route('pedidos.index')->with('success', 'Pedido finalizado.');
+    return redirect()
+      ->route('pedidos.index')
+      ->with('success', 'Pedido concluído.');
   }
 }

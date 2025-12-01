@@ -1,3 +1,15 @@
+@php
+    use Illuminate\Support\Facades\DB;
+
+    $cdPessoa = data_get(auth()->user(), 'cd_pessoa');
+
+    $nmCargo  = $cdPessoa
+      ? (string) DB::table('usuario')->where('cd_pessoa', $cdPessoa)->value('ds_cargo')
+      : null;
+
+    $isCaixa = is_string($nmCargo) && strcasecmp(trim($nmCargo), 'CAIXA') === 0;
+@endphp
+
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight" style="text-align: center;">
@@ -8,6 +20,7 @@
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                @unless($isCaixa)
                 <a href="{{ route('mesas.index') }}" style="background-color: black; margin-bottom: 5px;" class="block rounded-lg border border-white/20 p-6 text-white hover:ring">
                     <div class="flex items-center gap-4">
                         <i class="fa-solid fa-chair text-3xl opacity-70"></i>
@@ -59,6 +72,16 @@
                         <div>
                             <div class="text-lg font-semibold mb-1">Endereço</div>
                             <div class="text-sm text-gray-300">Dados do restaurante</div>
+                        </div>
+                    </div>
+                </a>
+                @endunless
+                <a href="{{ route('pedidos.index') }}" style="background-color: black; margin-bottom: 5px;" class="group block rounded-lg border border-white/20 p-6 text-white hover:ring">
+                    <div class="flex items-center gap-4">
+                        <i class="fa-solid fa-hand text-3xl opacity-70 group-hover:opacity-100"></i>
+                        <div>
+                            <div class="text-lg font-semibold mb-1">Pedidos</div>
+                            <div class="text-sm text-gray-300">Listagem de Pedidos</div>
                         </div>
                     </div>
                 </a>

@@ -24,7 +24,7 @@
 
                 <a href="{{ route('cardapio.produto.adicional', ['produto' => $produto]) }}" data-type="produto" data-id="{{ $produto->cd_produto }}"
                    class="inline-flex items-center hover:opacity-90 transition cursor-pointer w-full justify-center text-white dark:bg-white/10 dark:hover:bg-white/5
-                          focus:ring-4 focus:ring-green-500 shadow-xs font-medium leading-5 rounded-lg text-sm px-4 py-2.5 transition">
+                          focus:ring-4 focus:ring-green-500 shadow-xs font-medium leading-5 rounded-lg text-sm px-4 py-2.5 transition" style="background-color: green;">
                     Adicionar ao pedido
                     <svg class="w-4 h-4 ms-1.5 rtl:rotate-180 -me-0.5 text-white" aria-hidden="true"
                          xmlns="http://www.w3.org/2000/svg" width="24" height="24"

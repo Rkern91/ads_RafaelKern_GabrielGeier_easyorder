@@ -12,7 +12,7 @@
                         @csrf
                         <div>
                             <label for="nm_mesa" class="block text-sm mb-2 text-white">Nome da mesa</label>
-                            <input id="nm_mesa" name="nm_mesa" style="color: black;" value="{{ old('nm_mesa') }}"
+                            <input id="nm_mesa" name="nm_mesa" style="color: white;" value="{{ old('nm_mesa') }}"
                                    placeholder="Ex: Mesa 01"
                                    class="w-full rounded bg-black text-white placeholder-gray-400 border border-white/20 focus:border-white/40 focus:ring-0 p-2.5">
                             @error('nm_mesa')

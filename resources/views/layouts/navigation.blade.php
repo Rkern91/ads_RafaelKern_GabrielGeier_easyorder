@@ -1,3 +1,15 @@
+@php
+    use Illuminate\Support\Facades\DB;
+
+    $cdPessoa = data_get(auth()->user(), 'cd_pessoa');
+
+    $nmCargo  = $cdPessoa
+      ? (string) DB::table('usuario')->where('cd_pessoa', $cdPessoa)->value('ds_cargo')
+      : null;
+
+    $isCaixa = is_string($nmCargo) && strcasecmp(trim($nmCargo), 'CAIXA') === 0;
+@endphp
+
 <nav x-data="{ open: false }" style="background-color: black;"
      class="bg-white dark:bg-gray-800 border-b dark:border-gray-700">
     <!-- Primary Navigation Menu -->
@@ -13,6 +25,7 @@
 
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                    @unless($isCaixa)
                     <x-nav-link :href="route('mesas.index')" :active="request()->routeIs('mesas.*')">
                         {{ __('Mesas') }}
                     </x-nav-link>
@@ -31,6 +44,7 @@
                     <x-nav-link :href="route('endereco.edit')" :active="request()->routeIs('endereco.*')">
                         Endereço
                     </x-nav-link>
+                    @endunless
                     <x-nav-link :href="route('pedidos.index')" :active="request()->routeIs('pedidos.index')">
                         {{ __('Pedidos') }}
                     </x-nav-link>
